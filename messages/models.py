@@ -3,13 +3,12 @@ Models for the ***REMOVED*** app
 """
 
 
-import json
 import uuid
 
 import boto3
 from django.db import models
 
-SES = boto3.resource('ses')
+SES = boto3.client('ses')
 
 
 class Application(models.Model):
@@ -118,24 +117,10 @@ class Message(models.Model):
         verbose_name_plural = 'Messages'
         db_table = 'message'
 
-    def send_message(self, source=None):
-        response = SES.send_templated_email(
-            Source=source if source else self.template.application.from_email,
-            Destination={
-                'ToAddresses': self.to_emails,
-                'CcAddresses': self.cc_emails,
-                'BccAddresses': self.bcc_emails,
-            },
-            ConfigurationSetName='***REMOVED***',   # TODO: constant
-            Template=self.template.name,
-            TemplateData=json.loads(self.field_values)
-        )
-        return response
-
 
 class StatusLog(models.Model):
     """
-        Model to save message status logs
+    Model to save message status logs
     """
 
     STATUS_CHOICES = (

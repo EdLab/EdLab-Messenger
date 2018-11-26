@@ -33,6 +33,7 @@ class Application(models.Model):
 
         verbose_name_plural = 'Applications'
         db_table = 'application'
+        ordering = ['name']
 
 
 class Template(models.Model):
@@ -68,6 +69,7 @@ class Template(models.Model):
 
         verbose_name_plural = 'Templates'
         db_table = 'template'
+        ordering = ['name']
 
     def create_ses_template(self):
         response = SES.create_template(
@@ -91,12 +93,13 @@ class Message(models.Model):
     being sent out through this service
     """
 
+    ses_id = models.CharField(max_length=255, null=True, blank=True, unique=True)
     field_values = models.CharField(max_length=2047, null=False, blank=False)
     created_at = models.DateTimeField(auto_now_add=True, null=False, blank=False)
     updated_at = models.DateTimeField(auto_now=True, null=False, blank=False)
-    to_emails = models.CharField(max_length=4095, null=False, blank=False)
-    cc_emails = models.CharField(max_length=4095, null=True, blank=True)
-    bcc_emails = models.CharField(max_length=4095, null=True, blank=True)
+    to_email = models.CharField(max_length=255, null=False, blank=False)
+    is_cc = models.BooleanField(null=False, blank=False, default=False)
+    is_bcc = models.BooleanField(null=False, blank=False, default=False)
 
     template = models.ForeignKey(
         to=Template,
@@ -123,14 +126,10 @@ class StatusLog(models.Model):
     Model to save message status logs
     """
 
-    STATUS_CHOICES = (
-        ('pending', 'Pending'),
-    )
-
-    status = models.CharField(max_length=63, null=False, blank=False, choices=STATUS_CHOICES)
-    status_at = models.DateTimeField(auto_now_add=True, null=False, blank=False)
+    status = models.CharField(max_length=63, null=False, blank=False)
     created_at = models.DateTimeField(auto_now_add=True, null=False, blank=False)
     updated_at = models.DateTimeField(auto_now=True, null=False, blank=False)
+    comment = models.CharField(max_length=1023, null=True, blank=True)
 
     message = models.ForeignKey(
         to=Message,

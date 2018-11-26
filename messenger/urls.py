@@ -21,9 +21,12 @@ from messages import views
 
 
 router = routers.DefaultRouter()
-router.register(r'users', views.TemplateViewSet)
+router.register(r'templates', views.TemplateViewSet)
+router.register(r'applications', views.ApplicationViewSet)
 
 
 urlpatterns = [
-    url(r'^', include(router.urls))
+    url(r'^', include(router.urls)),
+    url(r'send_newsletter', views.send_newsletter),
+    url(r'^api-auth/', include('rest_framework.urls'))
 ]

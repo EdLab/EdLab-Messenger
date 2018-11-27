@@ -27,6 +27,6 @@ router.register(r'applications', views.ApplicationViewSet)
 
 urlpatterns = [
     url(r'^', include(router.urls)),
-    url(r'send_newsletter', views.send_newsletter),
+    url(r'send_newsletter/', views.send_newsletter),
     url(r'^api-auth/', include('rest_framework.urls'))
 ]

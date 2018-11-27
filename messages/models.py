@@ -4,6 +4,7 @@ Models for the ***REMOVED*** app
 
 
 import uuid
+from datetime import datetime
 
 import boto3
 from django.db import models
@@ -32,7 +33,6 @@ class Application(models.Model):
         """
 
         verbose_name_plural = 'Applications'
-        db_table = 'application'
         ordering = ['name']
 
 
@@ -68,23 +68,24 @@ class Template(models.Model):
         """
 
         verbose_name_plural = 'Templates'
-        db_table = 'template'
         ordering = ['name']
 
-    def create_ses_template(self):
-        response = SES.create_template(
-            Template={
-                'TemplateName': self.name,
-                'SubjectPart': self.subject,
-                'TextPart': self.template_text,
-                'HtmlPart': self.template_html
-            }
-        )
-        return response
+    def save(self, *args, **kwargs):
+        template = {
+            'TemplateName': self.name,
+            'SubjectPart': self.subject,
+            'TextPart': self.template_text,
+            'HtmlPart': self.template_html
+        }
+        if self.pk is None:
+            SES.create_template(Template=template)
+        else:
+            SES.update_template(Template=template)
+        super().save(*args, **kwargs)
 
-    def delete_ses_template(self):
-        response = SES.delete_template(TemplateName=self.name)
-        return response
+    def delete(self, *args, **kwargs):
+        SES.delete_template(TemplateName=self.name)
+        super().delete(*args, **kwargs)
 
 
 class Message(models.Model):
@@ -93,6 +94,7 @@ class Message(models.Model):
     being sent out through this service
     """
 
+    id = models.UUIDField(primary_key=True)
     ses_id = models.CharField(max_length=255, null=True, blank=True, unique=True)
     field_values = models.CharField(max_length=2047, null=False, blank=False)
     created_at = models.DateTimeField(auto_now_add=True, null=False, blank=False)
@@ -118,7 +120,6 @@ class Message(models.Model):
         """
 
         verbose_name_plural = 'Messages'
-        db_table = 'message'
 
 
 class StatusLog(models.Model):
@@ -127,9 +128,10 @@ class StatusLog(models.Model):
     """
 
     status = models.CharField(max_length=63, null=False, blank=False)
+    status_at = models.DateTimeField(null=False, blank=False)
     created_at = models.DateTimeField(auto_now_add=True, null=False, blank=False)
     updated_at = models.DateTimeField(auto_now=True, null=False, blank=False)
-    comment = models.CharField(max_length=1023, null=True, blank=True)
+    comment = models.TextField(null=True, blank=True)
 
     message = models.ForeignKey(
         to=Message,
@@ -148,4 +150,3 @@ class StatusLog(models.Model):
         """
 
         verbose_name_plural = 'StatusLogs'
-        db_table = 'status_log'

@@ -4,7 +4,6 @@ Models for the ***REMOVED*** app
 
 
 import uuid
-from datetime import datetime
 
 import boto3
 from django.db import models

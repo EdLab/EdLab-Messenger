@@ -82,23 +82,6 @@ def send_newsletter(request):
 
     to_chunks = [to_emails[i:i + 50] for i in range(0, len(to_emails), 50)]
 
-    def _get_message(email, ses_id):
-        return Message(
-            id=uuid4(),
-            to_email=email,
-            template=template,
-            field_values=field_values,
-            ses_id=ses_id
-        )
-
-    def _get_status_log(status, message):
-        return StatusLog(
-            message=message,
-            status=status['Status'],
-            comment=status.get('Error', None),
-            status_at=now()
-        )
-
     for chunk in to_chunks:
         destinations = [{'Destination': {'ToAddresses': [email]},
                          'ReplacementTemplateData': '{}'} for email in chunk]
@@ -109,13 +92,25 @@ def send_newsletter(request):
             Destinations=destinations,
             DefaultTemplateData=json.dumps(field_values)
         )
+        status_at = now()
         statuses = response['Status']
         messages = []
         status_logs = []
         for i in range(0, len(statuses)):
             message_id = statuses[i].get('MessageId', None)
-            messages.append(_get_message(chunk[i], message_id))
-            status_logs.append(_get_status_log(statuses[i], messages[i]))
+            messages.append(Message(
+                id=uuid4(),
+                to_email=chunk[i],
+                template=template,
+                field_values=field_values,
+                ses_id=message_id
+            ))
+            status_logs.append(StatusLog(
+                message=messages[i],
+                status=statuses[i]['Status'],
+                comment=statuses[i].get('Error', None),
+                status_at=status_at
+            ))
             if statuses[i].get('MessageId', None) is None:
                 print('Unable to send message')
                 print(statuses[i])

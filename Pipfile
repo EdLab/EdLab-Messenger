@@ -12,6 +12,7 @@ djangorestframework = "*"
 mysqlclient = "*"
 "boto3" = "*"
 botocore = "*"
+"html2text" = "*"
 
 [requires]
 python_version = "3.7"

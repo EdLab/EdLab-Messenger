@@ -4,11 +4,16 @@ Utility functions
 
 import json
 import boto3
+# from time import sleep
+import threading
+
+from django.utils.timezone import now
 
 from .models import Message, StatusLog
 
 
 SQS = boto3.client('sqs')
+SES = boto3.client('ses')
 
 
 def update_statuses():
@@ -40,3 +45,12 @@ def update_statuses():
         else:
             return
     process_messages()
+
+
+def send_scheduled_emails():
+    messages = Message.objects.filter(status=Message.SCHEDULED, send_at__gte=now())\
+        .prefetch_related('template__application')
+
+    for message in messages:
+        thread = threading.Thread(target=message.send)
+        thread.start()

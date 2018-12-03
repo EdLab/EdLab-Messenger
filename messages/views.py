@@ -4,8 +4,6 @@ API controllers for the ***REMOVED*** app
 
 import json
 from datetime import datetime
-from uuid import uuid4
-from time import sleep
 import threading
 
 import boto3
@@ -14,11 +12,13 @@ from rest_framework.serializers import HyperlinkedModelSerializer, PrimaryKeyRel
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from django.utils.timezone import now, make_aware
+from django.utils.timezone import make_aware
+from django.template import Template as T, Context as C
 
-from .models import Template, Message, StatusLog, Application
+from .models import Template, Message, Application
 
 SES = boto3.client('ses')
+AWS_TIME_FORMAT = '%a, %d %b %Y %H:%M:%S %Z'
 
 
 class ApplicationSerializer(HyperlinkedModelSerializer):
@@ -71,100 +71,76 @@ def send_email(request):
     application_id = request.data['application_id']
     to_emails = request.data['to_emails']
     subject = request.data['subject']
-    text = request.data['text']
     html = request.data['html']
 
     application = Application.objects.get(pk=application_id)
 
-    aws_time_format = '%a, %d %b %Y %H:%M:%S %Z'
-
-    def send_message(email):
-        response = SES.send_email(
-            Source=application.from_email,
-            Destination={'ToAddresses': [email]},
-            Message={
-                'Subject': {'Data': subject},
-                'Body': {
-                    'Text': {'Data': text},
-                    'Html': {'Data': html},
-                }
-            },
-            ConfigurationSetName='***REMOVED***'
-        )
-        send_at = response['ResponseMetadata']['HTTPHeaders']['date']
-        Message.objects.create(
-            to_email=email,
-            ses_id=response['MessageId'],
-            message_text=text,
+    def save_message(to_email):
+        message = Message(
+            to_email=to_email,
+            subject=subject,
             message_html=html,
-            send_at=make_aware(datetime.strptime(send_at, aws_time_format)),
-            status=Message.SENT
+            application=application
         )
+        message.save()
 
     for email in to_emails:
-        thread = threading.Thread(target=send_message, args=(email,))
+        thread = threading.Thread(target=save_message, args=(email,))
         thread.start()
 
     return Response(status=200, data={})
 
 
 @api_view(['POST'])
-def send_newsletter(request):
+def schedule_emails(request):
     """
-    Controller for newsletters
+    Controller to schedule emails in bulk
+    :param request:
+    :return:
     """
 
     to_emails = request.data['to_emails']
     template_id = request.data['template_id']
     field_values = json.loads(request.data['field_values'])
+    scheduled_at = json.loads(request.data['scheduled_at'])
 
     field_keys = list(field_values.keys())
 
     template = Template.objects.get(pk=template_id)
     template_fields = template.template_fields.split(',')
-    from_email = template.application.from_email
+    application = template.application
 
     if set(template_fields).issubset(set(field_keys)) is False or \
             set(field_keys).issubset(set(template_fields)) is False:
         return Response({'message': 'Fields do not match required fields'}, status=400)
 
-    to_chunks = [to_emails[i:i + 50] for i in range(0, len(to_emails), 50)]
+    for key in field_keys:
+        if isinstance(field_values[key], list) and len(to_emails) != len(field_values[key]):
+            return Response(
+                {'message': F'Number of destinations for {key} not equal to number of email IDs'},
+                status=400
+            )
 
-    for chunk in to_chunks:
-        destinations = [{'Destination': {'ToAddresses': [email]},
-                         'ReplacementTemplateData': '{}'} for email in chunk]
-        response = SES.send_bulk_templated_email(
-            Source=from_email,
-            ConfigurationSetName='***REMOVED***',
-            Template=template.name,
-            Destinations=destinations,
-            DefaultTemplateData=json.dumps(field_values)
-        )
-        status_at = now()
-        statuses = response['Status']
-        messages = []
-        status_logs = []
-        for i in range(0, len(statuses)):
-            message_id = statuses[i].get('MessageId', None)
-            messages.append(Message(
-                id=uuid4(),
-                to_email=chunk[i],
-                template=template,
-                field_values=field_values,
-                ses_id=message_id
-            ))
-            status_logs.append(StatusLog(
-                message=messages[i],
-                status=statuses[i]['Status'],
-                comment=statuses[i].get('Error', None),
-                status_at=status_at
-            ))
-            if statuses[i].get('MessageId', None) is None:
-                print('Unable to send message')
-                print(statuses[i])
-                print(response['ResponseMetadata'])
-        Message.objects.bulk_create(messages)
-        StatusLog.objects.bulk_create(status_logs)
-        sleep(0.5)  # TODO: make wait time dynamic?
-
+    messages = []
+    for i in range(0, len(to_emails)):
+        replacements = {}
+        for key in field_keys:
+            if isinstance(field_values[key], list):
+                replacements[key] = field_values[key][i]
+            else:
+                replacements[key] = field_values[key]
+        t_subject = T(template.subject)
+        t_message = T(template.template_html)
+        c = C(replacements)
+        subject = t_subject.render(c)
+        html = t_message.render(c)
+        messages.append(Message(
+            to_email=to_emails[i],
+            subject=subject,
+            message_html=html,
+            scheduled_at=make_aware(datetime.strptime(scheduled_at, AWS_TIME_FORMAT)),
+            status=Message.SCHEDULED,
+            application=application
+        ))
+    Message.objects.bulk_create(messages)
     return Response(status=200, data={})

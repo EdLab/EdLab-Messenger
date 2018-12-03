@@ -3,8 +3,10 @@ API controllers for the ***REMOVED*** app
 """
 
 import json
+from datetime import datetime
 from uuid import uuid4
 from time import sleep
+import threading
 
 import boto3
 from rest_framework.viewsets import ModelViewSet
@@ -12,7 +14,7 @@ from rest_framework.serializers import HyperlinkedModelSerializer, PrimaryKeyRel
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from django.utils.timezone import now
+from django.utils.timezone import now, make_aware
 
 from .models import Template, Message, StatusLog, Application
 
@@ -58,6 +60,52 @@ class TemplateViewSet(ModelViewSet):
 
     queryset = Template.objects.all()
     serializer_class = TemplateSerializer
+
+
+@api_view(['POST'])
+def send_email(request):
+    """
+    Controller for individual email
+    """
+
+    application_id = request.data['application_id']
+    to_emails = request.data['to_emails']
+    subject = request.data['subject']
+    text = request.data['text']
+    html = request.data['html']
+
+    application = Application.objects.get(pk=application_id)
+
+    aws_time_format = '%a, %d %b %Y %H:%M:%S %Z'
+
+    def send_message(email):
+        response = SES.send_email(
+            Source=application.from_email,
+            Destination={'ToAddresses': [email]},
+            Message={
+                'Subject': {'Data': subject},
+                'Body': {
+                    'Text': {'Data': text},
+                    'Html': {'Data': html},
+                }
+            },
+            ConfigurationSetName='***REMOVED***'
+        )
+        send_at = response['ResponseMetadata']['HTTPHeaders']['date']
+        Message.objects.create(
+            to_email=email,
+            ses_id=response['MessageId'],
+            message_text=text,
+            message_html=html,
+            send_at=make_aware(datetime.strptime(send_at, aws_time_format)),
+            status=Message.SENT
+        )
+
+    for email in to_emails:
+        thread = threading.Thread(target=send_message, args=(email,))
+        thread.start()
+
+    return Response(status=200, data={})
 
 
 @api_view(['POST'])

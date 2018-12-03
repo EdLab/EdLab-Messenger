@@ -93,25 +93,44 @@ class Message(models.Model):
     being sent out through this service
     """
 
-    id = models.UUIDField(primary_key=True)
+    SCHEDULED = 'scheduled'
+    SENT = 'sent'
+    FAILED = 'failed'
+
+    STATUS_CHOICES = (
+        (SCHEDULED, 'Scheduled'),
+        (SENT, 'Sent'),
+        (FAILED, 'Failed')
+    )
+
     ses_id = models.CharField(max_length=255, null=True, blank=True, unique=True)
-    field_values = models.CharField(max_length=2047, null=False, blank=False)
+    field_values = models.TextField(null=True, blank=True)
+    message_text = models.TextField(null=True, blank=True)
+    message_html = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True, null=False, blank=False)
     updated_at = models.DateTimeField(auto_now=True, null=False, blank=False)
     to_email = models.CharField(max_length=255, null=False, blank=False)
-    is_cc = models.BooleanField(null=False, blank=False, default=False)
-    is_bcc = models.BooleanField(null=False, blank=False, default=False)
+    status = models.CharField(max_length=15, choices=STATUS_CHOICES, null=False, blank=False)
+    send_at = models.DateTimeField(null=False, blank=False)
 
     template = models.ForeignKey(
         to=Template,
-        null=False,
-        blank=False,
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+        related_name='messages'
+    )
+
+    application = models.ForeignKey(
+        to=Application,
+        null=True,
+        blank=True,
         on_delete=models.CASCADE,
         related_name='messages'
     )
 
     def __str__(self):
-        return F'{self.template.__str__()} - {self.created_at}'
+        return F'{self.template.__str__() if self.template else self.application.__str__()} - {self.created_at}'
 
     class Meta:
         """

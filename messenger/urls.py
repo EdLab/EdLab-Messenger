@@ -27,7 +27,7 @@ router.register(r'applications', views.ApplicationViewSet)
 
 urlpatterns = [
     url(r'^', include(router.urls)),
-    url(r'send_newsletter/', views.send_newsletter),
+    url(r'schedule_emails/', views.schedule_emails),
     url(r'send_email/', views.send_email),
     url(r'^api-auth/', include('rest_framework.urls'))
 ]

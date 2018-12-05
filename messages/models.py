@@ -132,7 +132,7 @@ class Message(models.Model):
             ConfigurationSetName='***REMOVED***'
         )
         sent_at = response['ResponseMetadata']['HTTPHeaders']['date']
-        self.sent_at = make_aware(datetime.strptime(sent_at, AWS_TIME_FORMAT)),
+        self.sent_at = make_aware(datetime.strptime(sent_at, AWS_TIME_FORMAT))
         self.ses_id = response['MessageId']
         self.status = Message.SENT
         self.save()

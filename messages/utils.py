@@ -9,17 +9,18 @@ import threading
 
 from django.utils.timezone import now
 
-from .models import Message, StatusLog
+from .models import Email, Message, StatusLog
 
 
 SQS = boto3.client('sqs')
 SES = boto3.client('ses')
+QUEUE = '***REMOVED***/***REMOVED***'
 
 
 def update_statuses():
     def process_messages():
         response = SQS.receive_message(
-            QueueUrl='***REMOVED***/***REMOVED***',
+            QueueUrl=QUEUE,
             MaxNumberOfMessages=10
         )
         messages = response.get('Messages', None)
@@ -38,7 +39,7 @@ def update_statuses():
                 ))
             StatusLog.objects.bulk_create(status_logs)
             SQS.delete_message_batch(
-                QueueUrl='***REMOVED***/***REMOVED***',
+                QueueUrl=QUEUE,
                 Entries=batch
             )
             process_messages()
@@ -48,9 +49,6 @@ def update_statuses():
 
 
 def send_scheduled_emails():
-    messages = Message.objects.filter(status=Message.SCHEDULED, send_at__gte=now())\
-        .prefetch_related('template__application')
-
-    for message in messages:
-        thread = threading.Thread(target=message.send)
-        thread.start()
+    emails = Email.objects.filter(status=Email.SCHEDULED, scheduled_at__gte=now())
+    for email in emails:
+        email.send()

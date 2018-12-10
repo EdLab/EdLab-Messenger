@@ -5,15 +5,17 @@ Models for the ***REMOVED*** app
 
 import uuid
 from datetime import datetime
+import threading
 
 from html2text import html2text
 import boto3
 
 from django.db import models
-from django.utils.timezone import make_aware
+from django.utils.timezone import make_aware, now
 
 SES = boto3.client('ses')
 AWS_TIME_FORMAT = '%a, %d %b %Y %H:%M:%S %Z'
+CONFIGURATION_SET = '***REMOVED***'
 
 
 class Application(models.Model):
@@ -74,42 +76,76 @@ class Template(models.Model):
         ordering = ['name']
 
 
+class Email(models.Model):
+    """
+    Model to hold details of each Email sent or scheduled
+    before turning it into an set of SES messages
+    """
+    TO_SEND = 'to_send'
+    SCHEDULED = 'scheduled'
+    SENT = 'sent'
+    FAILED = 'failed'
+
+    STATUS_CHOICES = (
+        (TO_SEND, 'ToSend'),
+        (SCHEDULED, 'Scheduled'),
+        (SENT, 'Sent'),
+        (FAILED, 'Failed')
+    )
+
+    subject = models.CharField(max_length=1023, null=False, blank=False)
+    html = models.TextField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True, null=False, blank=False)
+    updated_at = models.DateTimeField(auto_now=True, null=False, blank=False)
+    to_emails = models.TextField(null=False, blank=False)
+    status = models.CharField(max_length=15, choices=STATUS_CHOICES)
+    scheduled_at = models.DateTimeField(null=True, blank=True)
+    sent_at = models.DateTimeField(null=True, blank=True)
+
+    application = models.ForeignKey(
+        to=Application,
+        on_delete=models.PROTECT,
+        related_name='messages'
+    )
+
+    def __str__(self):
+        return F'{self.application.__str__()} - {self.subject} - {self.created_at}'
+
+    def send(self):
+        emails = self.to_emails.split(',')
+        for email in emails:
+            message = Message(to_email=email, email=self)
+            thread = threading.Thread(target=message.send)
+            thread.start()
+        self.status = Email.SENT
+        self.sent_at = now()
+        self.save()
+
+    def save(self, *args, **kwargs):
+        if self.status == Email.TO_SEND:
+            self.send()
+        super().save(*args, **kwargs)
+
+
 class Message(models.Model):
     """
     Model to hold details of each of the messages
     being sent out through this service
     """
 
-    SCHEDULED = 'scheduled'
-    SENT = 'sent'
-    FAILED = 'failed'
-
-    STATUS_CHOICES = (
-        (SCHEDULED, 'Scheduled'),
-        (SENT, 'Sent'),
-        (FAILED, 'Failed')
-    )
-
-    ses_id = models.CharField(max_length=255, null=True, blank=True, unique=True)
-    subject = models.CharField(max_length=1023, null=False, blank=False)
-    message_html = models.TextField(null=True, blank=True)
+    ses_id = models.CharField(max_length=255, unique=True)
     created_at = models.DateTimeField(auto_now_add=True, null=False, blank=False)
     updated_at = models.DateTimeField(auto_now=True, null=False, blank=False)
     to_email = models.CharField(max_length=255, null=False, blank=False)
-    status = models.CharField(max_length=15, choices=STATUS_CHOICES, null=False, blank=False)
-    scheduled_at = models.DateTimeField(null=True, blank=True)
-    sent_at = models.DateTimeField(null=True, blank=True)
 
-    application = models.ForeignKey(
-        to=Application,
-        null=True,
-        blank=True,
-        on_delete=models.CASCADE,
+    email = models.ForeignKey(
+        to=Email,
+        on_delete=models.PROTECT,
         related_name='messages'
     )
 
     def __str__(self):
-        return F'{self.application.__str__()} - {self.created_at}'
+        return F'{self.email.__str__()} - {self.created_at} - {self.to_email}'
 
     class Meta:
         """
@@ -119,28 +155,24 @@ class Message(models.Model):
         verbose_name_plural = 'Messages'
 
     def send(self):
+        html = self.email.html
         response = SES.send_email(
-            Source=self.application.from_email,
+            Source=self.email.application.from_email,
             Destination={'ToAddresses': [self.to_email]},
             Message={
-                'Subject': {'Data': self.subject},
+                'Subject': {'Data': self.email.subject},
                 'Body': {
-                    'Text': {'Data': html2text(self.message_html)},
-                    'Html': {'Data': self.message_html},
+                    'Text': {'Data': html2text(html)},
+                    'Html': {'Data': html},
                 }
             },
-            ConfigurationSetName='***REMOVED***'
+            ConfigurationSetName=CONFIGURATION_SET
         )
         sent_at = response['ResponseMetadata']['HTTPHeaders']['date']
         self.sent_at = make_aware(datetime.strptime(sent_at, AWS_TIME_FORMAT))
         self.ses_id = response['MessageId']
-        self.status = Message.SENT
+        self.status = Email.SENT
         self.save()
-
-    def save(self, *args, **kwargs):
-        if self.ses_id is None:
-            self.send()
-        super().save(*args, **kwargs)
 
 
 class StatusLog(models.Model):

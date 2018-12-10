@@ -50,7 +50,7 @@ class TemplateSerializer(HyperlinkedModelSerializer):
     class Meta:
         model = Template
         fields = ('application', 'name', 'description', 'subject',
-        'template_html', 'template_fields')
+                  'template_html', 'template_fields')
 
 
 class TemplateViewSet(ModelViewSet):

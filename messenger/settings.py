@@ -153,9 +153,5 @@ REST_FRAMEWORK = {
 }
 
 
-# SES Settings
-CONFIGURATION_SET = '***REMOVED***'
-
-
 # CORS Settings
 CORS_ORIGIN_ALLOW_ALL = True

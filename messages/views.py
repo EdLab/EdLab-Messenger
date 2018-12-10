@@ -28,7 +28,7 @@ class ApplicationSerializer(HyperlinkedModelSerializer):
 
     class Meta:
         model = Application
-        fields = ('name', 'from_email')
+        fields = ('id', 'name', 'from_email')
 
 
 class ApplicationViewSet(ModelViewSet):
@@ -49,7 +49,7 @@ class TemplateSerializer(HyperlinkedModelSerializer):
 
     class Meta:
         model = Template
-        fields = ('application', 'name', 'description', 'subject',
+        fields = ('id', 'application', 'name', 'description', 'subject',
         'template_html', 'template_fields')
 
 

@@ -3,8 +3,6 @@ API controllers for the ***REMOVED*** app
 """
 
 import json
-from datetime import datetime
-import threading
 
 import boto3
 from rest_framework.viewsets import ModelViewSet
@@ -12,10 +10,9 @@ from rest_framework.serializers import HyperlinkedModelSerializer, PrimaryKeyRel
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from django.utils.timezone import make_aware
-from django.template import Template as T, Context as C
+import django.template
 
-from .models import Template, Message, Application
+from .models import Template, Application, Email
 
 SES = boto3.client('ses')
 AWS_TIME_FORMAT = '%a, %d %b %Y %H:%M:%S %Z'
@@ -62,6 +59,28 @@ class TemplateViewSet(ModelViewSet):
     serializer_class = TemplateSerializer
 
 
+class EmailSerializer(HyperlinkedModelSerializer):
+    """
+    Serializer class for Template Model REST Interface
+    """
+
+    application = PrimaryKeyRelatedField(queryset=Application.objects.all())
+
+    class Meta:
+        model = Email
+        fields = ('id', 'application', 'subject', 'html', 'to_emails',
+                  'status', 'scheduled_at', 'sent_at')
+
+
+class EmailViewSet(ModelViewSet):
+    """
+    ViewSet class for Template Model REST Interface
+    """
+
+    queryset = Email.objects.all()
+    serializer_class = EmailSerializer
+
+
 @api_view(['POST'])
 def send_email(request):
     """
@@ -75,18 +94,14 @@ def send_email(request):
 
     application = Application.objects.get(pk=application_id)
 
-    def save_message(to_email):
-        message = Message(
-            to_email=to_email,
-            subject=subject,
-            message_html=html,
-            application=application
-        )
-        message.save()
-
-    for email in to_emails:
-        thread = threading.Thread(target=save_message, args=(email,))
-        thread.start()
+    email = Email(
+        subject=subject,
+        html=html,
+        to_emails=to_emails,
+        status=Email.TO_SEND,
+        application=application
+    )
+    email.save()
 
     return Response(status=200, data={})
 
@@ -100,47 +115,40 @@ def schedule_emails(request):
     """
 
     to_emails = request.data['to_emails']
-    template_id = request.data['template_id']
-    field_values = json.loads(request.data['field_values'])
     scheduled_at = json.loads(request.data['scheduled_at'])
 
-    field_keys = list(field_values.keys())
+    template_id = request.data.get('template_id', None)
+    if template_id is not None:
+        field_values = json.loads(request.data['field_values'])
+        field_keys = list(field_values.keys())
+        template = Template.objects.get(pk=template_id)
+        template_fields = template.template_fields.split(',')
+        application = template.application
 
-    template = Template.objects.get(pk=template_id)
-    template_fields = template.template_fields.split(',')
-    application = template.application
+        if set(template_fields).issubset(set(field_keys)) is False or \
+                set(field_keys).issubset(set(template_fields)) is False:
+            return Response({'message': 'Fields do not match required fields'}, status=400)
 
-    if set(template_fields).issubset(set(field_keys)) is False or \
-            set(field_keys).issubset(set(template_fields)) is False:
-        return Response({'message': 'Fields do not match required fields'}, status=400)
+        t_subject = django.template.Template(template.subject)
+        t_html = django.template.Template(template.template_html)
+        context = django.template.Context(field_values)
+        subject = t_subject.render(context)
+        html = t_html.render(context)
 
-    for key in field_keys:
-        if isinstance(field_values[key], list) and len(to_emails) != len(field_values[key]):
-            return Response(
-                {'message': F'Number of destinations for {key} not equal to number of email IDs'},
-                status=400
-            )
+    else:
+        subject = request.data['subject']
+        html = request.data['html']
+        application_id = request.data['application_id']
+        application = Application.objects.get(pk=application_id)
 
-    messages = []
-    for i in range(0, len(to_emails)):
-        replacements = {}
-        for key in field_keys:
-            if isinstance(field_values[key], list):
-                replacements[key] = field_values[key][i]
-            else:
-                replacements[key] = field_values[key]
-        t_subject = T(template.subject)
-        t_message = T(template.template_html)
-        c = C(replacements)
-        subject = t_subject.render(c)
-        html = t_message.render(c)
-        messages.append(Message(
-            to_email=to_emails[i],
-            subject=subject,
-            message_html=html,
-            scheduled_at=make_aware(datetime.strptime(scheduled_at, AWS_TIME_FORMAT)),
-            status=Message.SCHEDULED,
-            application=application
-        ))
-    Message.objects.bulk_create(messages)
+    email = Email(
+        subject=subject,
+        html=html,
+        to_emails=to_emails,
+        status=Email.SCHEDULED,
+        scheduled_at=scheduled_at,
+        application=application
+    )
+    email.save()
+
     return Response(status=200, data={})

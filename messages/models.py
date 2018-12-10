@@ -3,6 +3,7 @@ Models for the ***REMOVED*** app
 """
 
 
+import json
 import uuid
 from datetime import datetime
 import threading
@@ -13,8 +14,10 @@ import boto3
 from django.db import models
 from django.utils.timezone import make_aware, now
 
+SQS = boto3.client('sqs')
 SES = boto3.client('ses')
 AWS_TIME_FORMAT = '%a, %d %b %Y %H:%M:%S %Z'
+QUEUE = '***REMOVED***/***REMOVED***'
 CONFIGURATION_SET = '***REMOVED***'
 
 
@@ -112,6 +115,8 @@ class Email(models.Model):
         return F'{self.application.__str__()} - {self.subject} - {self.created_at}'
 
     def send(self):
+        if self.status == Email.SENT:
+            return
         emails = self.to_emails.split(',')
         for email in emails:
             message = Message(to_email=email, email=self)
@@ -126,12 +131,20 @@ class Email(models.Model):
             self.send()
         super().save(*args, **kwargs)
 
+    @classmethod
+    def send_scheduled_emails(cls):
+        emails = cls.objects.filter(status=cls.SCHEDULED, scheduled_at__gte=now())
+        for email in emails:
+            email.send()
+
 
 class Message(models.Model):
     """
     Model to hold details of each of the messages
     being sent out through this service
     """
+
+    USER_FIELDS = ['first_name', 'last_name', 'user_name', 'email']
 
     ses_id = models.CharField(max_length=255, unique=True)
     created_at = models.DateTimeField(auto_now_add=True, null=False, blank=False)
@@ -168,11 +181,20 @@ class Message(models.Model):
             },
             ConfigurationSetName=CONFIGURATION_SET
         )
+        self.ses_id = response['MessageId']
+        self.save()
         sent_at = response['ResponseMetadata']['HTTPHeaders']['date']
         self.sent_at = make_aware(datetime.strptime(sent_at, AWS_TIME_FORMAT))
-        self.ses_id = response['MessageId']
-        self.status = Email.SENT
-        self.save()
+        StatusLog.objects.create(
+            message=self,
+            status=Email.SENT,
+            status_at=sent_at
+        )
+
+    def save(self, *args, **kwargs):
+        if self.ses_id is None:
+            self.send()
+        super().save(*args, **kwargs)
 
 
 class StatusLog(models.Model):
@@ -203,3 +225,34 @@ class StatusLog(models.Model):
         """
 
         verbose_name_plural = 'StatusLogs'
+
+    @classmethod
+    def update_statuses(cls):
+        def process_messages():
+            response = SQS.receive_message(
+                QueueUrl=QUEUE,
+                MaxNumberOfMessages=10
+            )
+            messages = response.get('Messages', None)
+            if messages is not None:
+                batch = [{'Id': m['MessageId'], 'ReceiptHandle': m['ReceiptHandle']} for m in messages]
+                logs = [json.loads(m['Body']) for m in messages]
+
+                status_logs = []
+                for log in logs:
+                    message = Message.objects.get(ses_id=log['mail']['messageId'])
+                    status_logs.append(StatusLog(
+                        message=message,
+                        status=log['eventType'],
+                        comment=json.dumps(log['mail']),
+                        status_at=log['mail']['timestamp']
+                    ))
+                StatusLog.objects.bulk_create(status_logs)
+                SQS.delete_message_batch(
+                    QueueUrl=QUEUE,
+                    Entries=batch
+                )
+                process_messages()
+            else:
+                return
+        process_messages()

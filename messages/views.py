@@ -40,6 +40,11 @@ class EmailSerializer(HyperlinkedModelSerializer):
     Serializer class for Email Model REST Interface
     """
 
+    def create(self, validated_data):
+        scheduled_at = self.context['request'].get('scheduled_at', None)
+        validated_data['status'] = Email.SCHEDULED if scheduled_at is not None else Email.TO_SEND
+        return super().create(validated_data)
+
     class Meta:
         model = Email
         fields = ('id', 'subject', 'html', 'to_emails', 'status',
@@ -57,17 +62,6 @@ class EmailViewSet(CreateModelMixin,
 
     queryset = Email.objects.all()
     serializer_class = EmailSerializer
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        scheduled_at = serializer.initial_data.get('scheduled_at')
-        serializer.initial_data['status'] = Email.SCHEDULED if scheduled_at is not None else Email.TO_SEND
-        serializer.is_valid(raise_exception=True)
-
-        headers = self.get_success_headers(serializer.data)
-        self.perform_create(serializer)
-
-        return Response(serializer.data, status=HTTP_201_CREATED, headers=headers)
 
 
 class StatusLogSerializer(HyperlinkedModelSerializer):

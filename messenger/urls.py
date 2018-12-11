@@ -22,12 +22,11 @@ from messages import views
 
 router = routers.DefaultRouter()
 router.register(r'templates', views.TemplateViewSet)
-router.register(r'applications', views.ApplicationViewSet)
+router.register(r'emails', views.EmailViewSet)
+router.register(r'messages', views.MessageViewSet)
 
 
 urlpatterns = [
     url(r'^', include(router.urls)),
-    url(r'schedule_emails/', views.schedule_emails),
-    url(r'send_email/', views.send_email),
     url(r'^api-auth/', include('rest_framework.urls'))
 ]

@@ -4,7 +4,6 @@ Models for the ***REMOVED*** app
 
 
 import json
-import uuid
 from datetime import datetime
 import threading
 
@@ -21,30 +20,6 @@ QUEUE = '***REMOVED***/***REMOVED***'
 CONFIGURATION_SET = '***REMOVED***'
 
 
-class Application(models.Model):
-    """
-    Model to contain information on applications
-    using this service
-    """
-
-    name = models.CharField(max_length=63, null=False, blank=False, unique=True)
-    token = models.UUIDField(default=uuid.uuid4)
-    created_at = models.DateTimeField(auto_now_add=True, null=False, blank=False)
-    updated_at = models.DateTimeField(auto_now=True, null=False, blank=False)
-    from_email = models.CharField(max_length=63, null=False, blank=False)
-
-    def __str__(self):
-        return self.name
-
-    class Meta:
-        """
-        Meta options for Application model
-        """
-
-        verbose_name_plural = 'Applications'
-        ordering = ['name']
-
-
 class Template(models.Model):
     """
     Model to contain email templates of all
@@ -58,17 +33,10 @@ class Template(models.Model):
     template_fields = models.CharField(max_length=255, null=False, blank=False)
     created_at = models.DateTimeField(auto_now_add=True, null=False, blank=False)
     updated_at = models.DateTimeField(auto_now=True, null=False, blank=False)
-
-    application = models.ForeignKey(
-        to=Application,
-        null=False,
-        blank=False,
-        on_delete=models.CASCADE,
-        related_name='templates'
-    )
+    default_from = models.CharField(max_length=63, null=True, blank=True)
 
     def __str__(self):
-        return F'{self.application.__str__()} - {self.name}'
+        return self.name
 
     class Meta:
         """
@@ -104,15 +72,10 @@ class Email(models.Model):
     status = models.CharField(max_length=15, choices=STATUS_CHOICES)
     scheduled_at = models.DateTimeField(null=True, blank=True)
     sent_at = models.DateTimeField(null=True, blank=True)
-
-    application = models.ForeignKey(
-        to=Application,
-        on_delete=models.PROTECT,
-        related_name='messages'
-    )
+    from_email = models.CharField(max_length=63, null=False, blank=False)
 
     def __str__(self):
-        return F'{self.application.__str__()} - {self.subject} - {self.created_at}'
+        return F'{self.subject} - {self.created_at}'
 
     def send(self):
         if self.status == Email.SENT:
@@ -170,7 +133,7 @@ class Message(models.Model):
     def send(self):
         html = self.email.html
         response = SES.send_email(
-            Source=self.email.application.from_email,
+            Source=self.email.from_email,
             Destination={'ToAddresses': [self.to_email]},
             Message={
                 'Subject': {'Data': self.email.subject},

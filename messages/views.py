@@ -60,8 +60,8 @@ class EmailViewSet(CreateModelMixin,
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
-        scheduled_at = serializer.data.get('scheduled_at')
-        serializer.data['status'] = Email.SCHEDULED if scheduled_at is not None else Email.TO_SEND
+        scheduled_at = serializer.initial_data.get('scheduled_at')
+        serializer.initial_data['status'] = Email.SCHEDULED if scheduled_at is not None else Email.TO_SEND
         serializer.is_valid(raise_exception=True)
 
         headers = self.get_success_headers(serializer.data)

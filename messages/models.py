@@ -30,7 +30,7 @@ class Template(models.Model):
     description = models.CharField(max_length=255, null=True, blank=True)
     subject = models.CharField(max_length=1023, null=True, blank=True)
     template_html = models.TextField(null=False, blank=False)
-    template_fields = models.CharField(max_length=255, null=False, blank=False)
+    template_fields = models.CharField(max_length=255, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True, null=False, blank=False)
     updated_at = models.DateTimeField(auto_now=True, null=False, blank=False)
     default_from = models.CharField(max_length=63, null=True, blank=True)

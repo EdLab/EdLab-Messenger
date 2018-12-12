@@ -5,7 +5,8 @@ Models for the ***REMOVED*** app
 
 import json
 from datetime import datetime
-import threading
+# import threading
+from multiprocessing import Process
 
 from html2text import html2text
 import boto3
@@ -84,8 +85,9 @@ class Email(models.Model):
         for email in emails:
             print('Sending message associated with email: %s' % email)
             message = Message(to_email=email, email=self)
-            thread = threading.Thread(target=message.send)
-            thread.start()
+            # thread = threading.Thread(target=message.send)
+            # thread.start()
+            Process(target=message.send)
         self.status = Email.SENT
         self.sent_at = now()
         self.save()

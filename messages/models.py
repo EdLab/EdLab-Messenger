@@ -188,8 +188,8 @@ class StatusLog(models.Model):
 
         verbose_name_plural = 'StatusLogs'
 
-    @classmethod
-    def update_statuses(cls):
+    @staticmethod
+    def update_statuses():
         def process_messages():
             response = SQS.receive_message(
                 QueueUrl=QUEUE,

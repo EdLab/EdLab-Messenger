@@ -147,11 +147,10 @@ class Message(models.Model):
         self.ses_id = response['MessageId']
         self.save()
         sent_at = response['ResponseMetadata']['HTTPHeaders']['date']
-        self.sent_at = make_aware(datetime.strptime(sent_at, AWS_TIME_FORMAT))
         StatusLog.objects.create(
             message=self,
             status=Email.SENT,
-            status_at=sent_at
+            status_at=make_aware(datetime.strptime(sent_at, AWS_TIME_FORMAT))
         )
 
     def save(self, *args, **kwargs):

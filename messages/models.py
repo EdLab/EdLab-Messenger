@@ -87,7 +87,8 @@ class Email(models.Model):
             message = Message(to_email=email, email=self)
             # thread = threading.Thread(target=message.send)
             # thread.start()
-            Process(target=message.send)
+            p = Process(target=message.send)
+            p.start()
         self.status = Email.SENT
         self.sent_at = now()
         self.save()

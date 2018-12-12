@@ -82,12 +82,14 @@ class Email(models.Model):
             return
         emails = self.to_emails.split(',')
         for email in emails:
+            print('Sending message associated with email: %s' % email)
             message = Message(to_email=email, email=self)
             thread = threading.Thread(target=message.send)
             thread.start()
         self.status = Email.SENT
         self.sent_at = now()
         self.save()
+        print('Email saved to db: %s' % self.id)
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
@@ -144,8 +146,11 @@ class Message(models.Model):
             },
             ConfigurationSetName=CONFIGURATION_SET
         )
+        print('Sent message: %s' % self.to_email)
+        print(response)
         self.ses_id = response['MessageId']
         self.save()
+        print('Message saved to db: %s' % self.id)
         sent_at = response['ResponseMetadata']['HTTPHeaders']['date']
         StatusLog.objects.create(
             message=self,

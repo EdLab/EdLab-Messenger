@@ -41,15 +41,14 @@ class EmailSerializer(HyperlinkedModelSerializer):
     """
 
     def create(self, validated_data):
-        scheduled_at = self.context['request'].get('scheduled_at', None)
+        scheduled_at = self.context['request'].data.get('scheduled_at', None)
         validated_data['status'] = Email.SCHEDULED if scheduled_at is not None else Email.TO_SEND
         return super().create(validated_data)
 
     class Meta:
         model = Email
-        fields = ('id', 'subject', 'html', 'to_emails', 'status',
-                  'scheduled_at', 'from_email')
-        read_only_fields = ('sent_at',)
+        fields = ('id', 'subject', 'html', 'to_emails', 'scheduled_at', 'from_email')
+        read_only_fields = ('sent_at', 'status')
 
 
 class EmailViewSet(CreateModelMixin,

@@ -13,8 +13,8 @@ import boto3
 from django.db import models
 from django.utils.timezone import make_aware, now
 
-SQS = boto3.client('sqs')
-SES = boto3.client('ses')
+SQS = boto3.client('sqs', region_name='us-east-1')
+SES = boto3.client('ses', region_name='us-east-1')
 AWS_TIME_FORMAT = '%a, %d %b %Y %H:%M:%S %Z'
 QUEUE = '***REMOVED***/***REMOVED***'
 CONFIGURATION_SET = '***REMOVED***'

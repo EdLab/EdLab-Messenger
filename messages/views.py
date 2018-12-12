@@ -91,5 +91,5 @@ class MessageViewSet(ReadOnlyModelViewSet):
     ViewSet class for Message Model REST Interface
     """
 
-    queryset = Email.objects.all().prefetch_related('status_logs')
+    queryset = Message.objects.all().prefetch_related('status_logs')
     serializer_class = MessageSerializer

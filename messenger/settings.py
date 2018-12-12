@@ -28,8 +28,7 @@ SECRET_KEY = '(y&@n=h*tby&y+a&7lnt0z0nzp7d=-$x#-ieq+tzuhs*_$*8wj'
 DEBUG = ENV == 'development'
 
 ALLOWED_HOSTS = [
-    'dev-edlab-***REMOVED***.tc-***REMOVED***.org',
-    'edlab-***REMOVED***.tc-***REMOVED***.org',
+    '***REMOVED***2.tc-***REMOVED***.org',
     'localhost'
 ]
 

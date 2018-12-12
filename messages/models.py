@@ -90,9 +90,9 @@ class Email(models.Model):
         self.save()
 
     def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
         if self.status == Email.TO_SEND:
             self.send()
-        super().save(*args, **kwargs)
 
     @classmethod
     def send_scheduled_emails(cls):

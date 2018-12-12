@@ -1,0 +1,4 @@
+{
+    "version": "0.1.0",
+    "unit_tests": "echo 'unit tests command'"
+}

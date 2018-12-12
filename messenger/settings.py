@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 
 import os
 
+ENV = os.getenv('ENVIRONMENT', 'development')
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -23,9 +25,13 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '(y&@n=h*tby&y+a&7lnt0z0nzp7d=-$x#-ieq+tzuhs*_$*8wj'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = ENV == 'development'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'dev-edlab-***REMOVED***.tc-***REMOVED***.org',
+    'edlab-***REMOVED***.tc-***REMOVED***.org',
+    'localhost'
+]
 
 
 # Application definition
@@ -101,9 +107,17 @@ DATABASES = {
         'PASSWORD': '***REMOVED***',
         'HOST': 'mailer-dev.c3ecka0pmtwy.us-east-1.rds.amazonaws.com',
         'PORT': 3306
+    },
+    'production': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': '***REMOVED***',
+        'USER': '***REMOVED***',
+        'PASSWORD': '***REMOVED***',
+        'HOST': 'mailer-dev.c3ecka0pmtwy.us-east-1.rds.amazonaws.com',
+        'PORT': 3306
     }
 }
-DATABASES['default'] = DATABASES['development']
+DATABASES['default'] = DATABASES[ENV]
 
 
 # Password validation

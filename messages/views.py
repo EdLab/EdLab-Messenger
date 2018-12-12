@@ -11,7 +11,7 @@ from rest_framework.response import Response
 
 from .models import Template, Email, Message, StatusLog
 
-SES = boto3.client('ses')
+SES = boto3.client('ses', region_name='us-east-1')
 AWS_TIME_FORMAT = '%a, %d %b %Y %H:%M:%S %Z'
 
 

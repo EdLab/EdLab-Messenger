@@ -188,8 +188,8 @@ class StatusLog(models.Model):
 
         verbose_name_plural = 'StatusLogs'
 
-    @staticmethod
-    def update_statuses():
+    @classmethod
+    def update_statuses(cls):
         def process_messages():
             response = SQS.receive_message(
                 QueueUrl=QUEUE,
@@ -203,13 +203,13 @@ class StatusLog(models.Model):
                 status_logs = []
                 for log in logs:
                     message = Message.objects.get(ses_id=log['mail']['messageId'])
-                    status_logs.append(StatusLog(
+                    status_logs.append(cls(
                         message=message,
                         status=log['eventType'],
                         comment=json.dumps(log['mail']),
                         status_at=log['mail']['timestamp']
                     ))
-                StatusLog.objects.bulk_create(status_logs)
+                cls.objects.bulk_create(status_logs)
                 SQS.delete_message_batch(
                     QueueUrl=QUEUE,
                     Entries=batch

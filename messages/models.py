@@ -5,7 +5,8 @@ Models for the ***REMOVED*** app
 
 import json
 from datetime import datetime
-from multiprocessing import Process
+import time
+# from multiprocessing import Process
 
 from html2text import html2text
 import boto3
@@ -81,10 +82,19 @@ class Email(models.Model):
         if self.status == Email.SENT:
             return
         emails = self.to_emails.split(',')
+        ses_quota = SES.get_send_quota()
+        send_rate = ses_quota['MaxSendRate']
+        sleep_time = len(emails) / send_rate
+        start_time = time.time()
+        messages_sent = 0
         for email in emails:
+            if messages_sent / (time.time() - start_time) >= send_rate:
+                time.sleep(sleep_time)
             message = Message(to_email=email, email=self)
-            p = Process(target=message.send)
-            p.start()
+            message.send()
+            messages_sent += 1
+            # p = Process(target=message.send)
+            # p.start()
         self.status = Email.SENT
         self.sent_at = now()
         self.save()

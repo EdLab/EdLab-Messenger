@@ -70,6 +70,8 @@ class Email(models.Model):
     created_at = models.DateTimeField(auto_now_add=True, null=False, blank=False)
     updated_at = models.DateTimeField(auto_now=True, null=False, blank=False)
     to_emails = models.TextField(null=False, blank=False)
+    cc_emails = models.CharField(max_length=1024, null=True, blank=True)
+    bcc_emails = models.CharField(max_length=1024, null=True, blank=True)
     status = models.CharField(max_length=15, choices=STATUS_CHOICES)
     scheduled_at = models.DateTimeField(null=True, blank=True)
     sent_at = models.DateTimeField(null=True, blank=True)
@@ -141,12 +143,19 @@ class Message(models.Model):
         verbose_name_plural = 'Messages'
 
     def send(self):
-        html = self.email.html
+        email = self.email
+        html = email.html
+        cc_emails = email.cc_emails.split(',') if email.cc_emails else []
+        bcc_emails = email.bcc_emails.split(',') if email.bcc_emails else []
         response = SES.send_email(
-            Source=self.email.from_email,
-            Destination={'ToAddresses': [self.to_email]},
+            Source=email.from_email,
+            Destination={
+                'ToAddresses': [self.to_email],
+                'CcAddresses': cc_emails,
+                'BccAddresses': bcc_emails
+            },
             Message={
-                'Subject': {'Data': self.email.subject},
+                'Subject': {'Data': email.subject},
                 'Body': {
                     'Text': {'Data': html2text(html)},
                     'Html': {'Data': html},

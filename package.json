@@ -1,0 +1,34 @@
+{
+  "name": "***REMOVED***",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "bump": "gulp bump",
+    "bump:minor": "gulp bump-minor",
+    "bump:major": "gulp bump-major",
+    "dev": "pm2 start ecosystem.config.js --only ***REMOVED***-dev --no-daemon",
+    "int": "pm2-docker start ecosystem.config.js --only ***REMOVED***-int",
+    "prod": "pm2-docker start ecosystem.config.js --only ***REMOVED***-prod",
+    "build": "npm run clean && babel server --copy-files -d dist",
+    "clean": "rimraf public/*",
+    "migrate": "sequelize --config config/DatabaseConfig.json db:migrate",
+    "test": "NODE_ENV=test mocha \"tests/*.test.js\" --exit",
+    "test:reporter": "NODE_ENV=test mocha \"tests/*.test.js\" --reporter mochawesome --reporter-options reportDir=tests/report,autoOpen  --exit",
+    "doc": "apidoc -v -i server/controllers -i server/middlewares -o docs/"
+  },
+  "author": "Srujan Routhu",
+  "license": "ISC",
+  "dependencies": {
+    "apidoc": "^0.17.7",
+    "aws-sdk": "^2.387.0",
+    "dotenv": "^6.2.0",
+    "gulp": "^4.0.0",
+    "mocha": "^5.2.0",
+    "moment": "^2.23.0",
+    "morgan": "^1.9.1",
+    "pm2": "^3.2.8",
+    "rimraf": "^2.6.3",
+    "textversionjs": "^1.1.3"
+  }
+}

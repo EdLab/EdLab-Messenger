@@ -1,5 +1,7 @@
-import app from './app';
-import { createServer } from 'http';
+require('@babel/register')
+
+const app = require('./app').default
+const { createServer } = require('http')
 const server = createServer(app)
 
 const PORT = process.env.PORT || AppConfig.PORT || 8000
@@ -12,4 +14,4 @@ process.on('uncaughtException', (err) => {
   process.exit(1)
 })
 
-export default app
+module.exports = app

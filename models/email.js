@@ -28,11 +28,11 @@ export default function (sequelize, DataTypes) {
         values: Object.values(Constants.EMAIL_STATUSES),
       },
       scheduled_at: {
-        type: DataTypes.DATETIME,
+        type: DataTypes.DATE,
         allowNull: true,
       },
       sent_at: {
-        type: DataTypes.DATETIME,
+        type: DataTypes.DATE,
         allowNull: true,
       },
       from_email: {

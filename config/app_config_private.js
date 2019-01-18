@@ -1,5 +1,4 @@
 import dbConfig from './DatabaseConfig.json';
-import esConfig from './ElasticSearchConfig.json';
 
 const configs = {
   'default': {
@@ -9,6 +8,7 @@ const configs = {
     },
     SES_CONFIGURATION_SET: '***REMOVED***',
     SQS_QUEUE_URL: '***REMOVED***/***REMOVED***',
+    PAGINATION_LIMIT: 12,
   },
   'development': {
     ENABLE_DOC: 'true',
@@ -20,13 +20,11 @@ const configs = {
       AWS_REGION: 'us-east-1',
       EMAIL_SENDER: 'TC Library Archive <***REMOVED***@tc.columbia.edu>',
     },
-  },åå
+  },
 }
 export default (env = process.env.NODE_ENV) => {
   const dbConfigEnv = process.env.USE_DATABASE || env
-  const esConfigEnv = process.env.USE_ES || env
   return Object.assign(configs['default'], configs[env], {
     DBCONFIG: dbConfig[dbConfigEnv],
-    ESCONFIG: esConfig[esConfigEnv],
   })
 }

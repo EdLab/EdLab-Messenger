@@ -1,18 +1,16 @@
-import '@babel/register'
-
 import { join } from 'path'
 import cors from 'cors'
 import morgan from 'morgan'
 import helmet from 'helmet'
-import express, { static } from 'express'
+import express from 'express'
 import { json } from 'body-parser'
 
 const env = process.env.NODE_ENV || 'development'
 import { init, Handlers } from '@sentry/node'
 
-import publicConfig from '../config/app_config'
-import privateConfig from '../config/app_config_private'
-import { version } from '../jenkins.json'
+import publicConfig from './config/app_config'
+import privateConfig from './config/app_config_private'
+import { version } from './jenkins.json'
 const localConfig = require('dotenv').config()
 
 global.AppConfig = Object.assign(
@@ -21,9 +19,10 @@ global.AppConfig = Object.assign(
   privateConfig(env),
   localConfig.parsed)
 
-global.Constants = require('../config/constants')
+global.Constants = require('./config/constants')
 global.Logger = require('./lib/Logger').default('logs/events.log')
-// global.Utility = require('./lib/Utility')
+global.Utility = require('./lib/Utility')
+global.Response = require('./lib/Response')
 
 AppConfig.env = env
 AppConfig.isDevelopment = env === 'development'
@@ -66,21 +65,20 @@ if (AppConfig.isProduction) {
 }
 // Database and Models
 global.SequelizeInst = require('./lib/Database').default(AppConfig.DBCONFIG)
-Object.assign(global, require('./models'))
+Object.assign(global, require('./models').default)
 
 // Cron Tasks and Sitemap
-const CronTasks = require('./lib/cron').start()
+const CronTasks = require('./lib/Cron').start()
 Logger.info(`CronTasks: ${CronTasks.length} tasks scheduled`)
 
 if (AppConfig.ENABLE_DOC) {
-  app.use('/docs', static(join(__dirname, '..', 'docs')))
+  app.use('/docs', express.static(join(__dirname, '..', 'docs')))
 }
 
 // Regular Routes
 app.use(json({ limit: AppConfig.HTTP_BODY_LIMIT }))
-app.use(require('./routes'))
+app.use(require('./routes').default)
 
-// Error Route
 if (AppConfig.ENABLE_SENTRY_IO) {
   app.use(Handlers.errorHandler())
 }
@@ -89,6 +87,6 @@ app.use(() => {
   error.status = 404
   throw error
 })
-app.use(require('./routes/error'))
+app.use(require('./routes/error').default)
 
 export default app

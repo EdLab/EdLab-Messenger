@@ -8,7 +8,7 @@ export default function (sequelize, DataTypes) {
         allowNull: false,
       },
       status_at: {
-        type: DataTypes.DATETIME,
+        type: DataTypes.DATE,
         allowNull: false,
       },
       comment: {

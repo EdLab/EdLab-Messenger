@@ -1,4 +1,4 @@
-import dbConfig from './DatabaseConfig.json';
+import dbConfig from './DatabaseConfig.json'
 
 const configs = {
   'default': {

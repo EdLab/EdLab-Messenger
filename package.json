@@ -36,6 +36,7 @@
     "babel-plugin-transform-minify-booleans": "^6.9.4",
     "babel-plugin-transform-remove-console": "^6.9.4",
     "babel-plugin-transform-remove-debugger": "^6.9.4",
+    "chalk": "^2.4.2",
     "cli-highlight": "^2.0.0",
     "cors": "^2.8.5",
     "dotenv": "^6.2.0",

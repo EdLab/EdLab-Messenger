@@ -45,9 +45,39 @@ export default function (sequelize, DataTypes) {
                 })
                 logs = messages.map(message => JSON.parse(message.Body))
                 statusLogs = []
-
+                const promises = []
+                logs.forEach(log => {
+                  promises.push(
+                    Message
+                      .findOne({ where: { ses_id: log['mail']['messageId'] } })
+                      .then(message => {
+                        statusLogs.push({
+                          status: log['eventType'],
+                          message_id: message.id,
+                          status_at: log['mail']['timestamp'],
+                          comment: JSON.stringify(log['mail'])
+                        })
+                      })
+                  )
+                })
+                Promise
+                  .all(promises)
+                  .then(() => {
+                    StatusLog
+                      .bulkCreate(statusLogs)
+                      .then(() => {
+                        sqs
+                          .deleteMessageBatch({
+                            Entries: batch,
+                            QueueUrl: AppConfig.SQS_QUEUE_URL
+                          })
+                          .promise()
+                          .then(() => processMessages())
+                      })
+                  })
               })
           }
+          processMessages()
         }
       },
       instanceMethods: {},

@@ -1,7 +1,7 @@
-import { Router } from 'express';
+import { Router } from 'express'
 const router = Router()
-import { urlencoded } from 'body-parser';
-import getParam from 'express-get-param';
+import { urlencoded } from 'body-parser'
+import getParam from 'express-get-param'
 
 const { getController } = Utility
 

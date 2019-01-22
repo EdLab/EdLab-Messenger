@@ -33,12 +33,10 @@ AppConfig.appVersion = version
 const app = express()
 app.locals.AppConfig = AppConfig
 app.locals.appVersion = version
-app.locals.appVersionHash = Buffer.from(`MESSENGER_VERSION:${version}`).toString('hex')
+app.locals.appVersionHash = Buffer.from(`MESSENGER_VERSION:${ version }`).toString('hex')
 
 app.set('trust proxy', ['loopback', 'uniquelocal', '172.30.0.0/16'])
-app.use(helmet({
-  frameguard: false,
-}))
+app.use(helmet({ frameguard: false }))
 app.use(cors({
   origin: [
     AppConfig.ALLOW_ORIGIN,
@@ -70,7 +68,7 @@ Object.assign(global, require('./models').default)
 
 // Cron Tasks and Sitemap
 const CronTasks = require('./lib/Cron').start()
-Logger.info(`CronTasks: ${CronTasks.length} tasks scheduled`)
+Logger.info(`CronTasks: ${ CronTasks.length } tasks scheduled`)
 
 if (AppConfig.ENABLE_DOC) {
   app.use('/docs', express.static(join(__dirname, '..', 'docs')))
@@ -80,9 +78,7 @@ if (AppConfig.ENABLE_DOC) {
 app.use(json({ limit: AppConfig.HTTP_BODY_LIMIT }))
 app.use(require('./routes').default)
 
-if (AppConfig.ENABLE_SENTRY_IO) {
-  app.use(Handlers.errorHandler())
-}
+if (AppConfig.ENABLE_SENTRY_IO) { app.use(Handlers.errorHandler()) }
 app.use(() => {
   const error = new Error('Resource Not Found')
   error.status = 404

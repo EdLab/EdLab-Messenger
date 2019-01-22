@@ -24,9 +24,10 @@ export default function (sequelize, DataTypes) {
             onDelete: 'CASCADE',
           })
         },
-        update_statuses() {
+        updateStatuses() {
+          let deleteBatchParams
           const processMessages = () => {
-            sqs
+            return sqs
               .receiveMessage({
                 QueueUrl: AppConfig.SQS_QUEUE_URL,
                 MaxNumberOfMessages: 10,
@@ -34,15 +35,21 @@ export default function (sequelize, DataTypes) {
               .promise()
               .then(data => {
                 if (!data || !data.Messages) {
+                  Logger.log('No pending messages on SQS')
                   return
                 }
-                messages = data.Messages
-                batch = messages.map(message => {
+                const messages = data.Messages
+                Logger.log(`Processing ${ messages.length } messages`)
+                const batch = messages.map(message => {
                   return {
                     Id: message.MessageId,
                     ReceiptHandle: message.ReceiptHandle,
                   }
                 })
+                deleteBatchParams = {
+                  Entries: batch,
+                  QueueUrl: AppConfig.SQS_QUEUE_URL,
+                }
                 logs = messages.map(message => JSON.parse(message.Body))
                 statusLogs = []
                 const promises = []
@@ -60,24 +67,19 @@ export default function (sequelize, DataTypes) {
                       })
                   )
                 })
-                Promise
-                  .all(promises)
-                  .then(() => {
-                    StatusLog
-                      .bulkCreate(statusLogs)
-                      .then(() => {
-                        sqs
-                          .deleteMessageBatch({
-                            Entries: batch,
-                            QueueUrl: AppConfig.SQS_QUEUE_URL
-                          })
-                          .promise()
-                          .then(() => processMessages())
-                      })
-                  })
+                return Promise.all(promises)
+              })
+              .then(() => StatusLog.bulkCreate(statusLogs))
+              .then(() => {
+                Logger.log(`Created ${ messages.length } entries in StatusLog table`)
+                sqs.deleteMessageBatch(deleteBatchParams).promise()
+              })
+              .then(() => {
+                Logger.log(`Deleted message batch from SQS`)
+                processMessages()
               })
           }
-          processMessages()
+          return processMessages()
         }
       },
       instanceMethods: {},

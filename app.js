@@ -19,7 +19,7 @@ global.AppConfig = Object.assign(
   privateConfig(env),
   localConfig.parsed)
 
-global.Constants = require('./config/constants')
+// global.Constants = require('./config/constants')
 global.Logger = require('./lib/Logger').default('logs/events.log')
 global.Utility = require('./lib/Utility')
 global.Response = require('./lib/Response')

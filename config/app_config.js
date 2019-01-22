@@ -1,21 +1,21 @@
 const configs = {
-  'default': {
+  default: {
     HTTP_BODY_LIMIT: '50mb',
     ENABLE_SENTRY_IO: false,
     DISPLAY_ERROR_STACKTREE: true,
     LOG_LEVEL: 'debug',
   },
-  'development': {
+  development: {
     HOST_URL: 'http://localhost:3000',
   },
-  'test': {
+  test: {
     LOG_LEVEL: 'fatal',
     DISABLE_SEND_EMAIL: true,
   },
-  'integration': {
+  integration: {
     HOST_URL: 'https://***REMOVED***2.tc-***REMOVED***.org/',
   },
-  'production': {
+  production: {
     DISPLAY_ERROR_STACKTREE: false,
     ENABLE_SENTRY_IO: true,
     HOST_URL: 'https://***REMOVED***2.tc-***REMOVED***.org/',

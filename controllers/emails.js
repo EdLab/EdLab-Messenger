@@ -1,4 +1,4 @@
-EMAIL_FIELDS = ['subject', 'html', 'to_emails', 'cc_emails', 'bcc_emails', 'status', 'scheduled_at', 'sent_at', 'from_email']
+EMAIL_FIELDS = ['subject', 'html', 'to_emails', 'cc_emails', 'bcc_emails', 'scheduled_at', 'from_email']
 MESSAGE_FIELDS = ['ses_id', 'to_email']
 STATUS_LOG_FIELDS = ['status', 'status_at', 'comment']
 NO_MESSAGES_QUERY = '(SELECT COUNT(`id`) FROM `messages` WHERE `email_id` = `email`.`id`)'
@@ -6,6 +6,7 @@ NO_MESSAGES_QUERY = '(SELECT COUNT(`id`) FROM `messages` WHERE `email_id` = `ema
 export function list(_req, res, next) {
   const { p = 1 } = res.locals
   const fields = EMAIL_FIELDS
+  fields.push('completed_at')
   fields.push([SequelizeInst.literal(NO_MESSAGES_QUERY), 'no_messages'])
   Email
     .findAndCountAll({
@@ -25,6 +26,7 @@ export function list(_req, res, next) {
 export function retrieve(_req, res, next) {
   const { id = null } = res.locals
   const fields = EMAIL_FIELDS
+  fields.push('completed_at')
   fields.push([SequelizeInst.literal(NO_MESSAGES_QUERY), 'no_messages'])
   Email
     .findByPk(id, {
@@ -65,7 +67,7 @@ export function update(_req, res, next) {
       attributes: EMAIL_FIELDS,
     })
     .then(email => {
-        if (email.status !== Constants.EMAIL_STATUSES.SCHEDULED) {
+        if (!email.scheduled_at || email.completed_at) {
           return next(Response.Forbidden('Email already sent. Cannot update.'))
         }
         EMAIL_FIELDS.forEach(field => {
@@ -100,9 +102,7 @@ export function create(_req, res, next) {
 export function destroy(_req, res, next) {
   const { id = null } = res.locals
   Email
-    .findByPk(id, {
-      attributes: EMAIL_FIELDS,
-    })
+    .findByPk(id)
     .then(email => email.destroy())
     .then(() => res.status(204).send({}))
     .catch(e => next(e))

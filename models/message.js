@@ -28,9 +28,10 @@ export default function (sequelize, DataTypes) {
         })
       },
       send(email, to_email) {
-        html = email.html
-        cc_emails = email.cc_emails ? email.cc_emails.split(',') : []
-        bcc_emails = email.bcc_emails ? email.bcc_emails.split(',') : []
+        const html = email.html
+        const cc_emails = email.cc_emails ? email.cc_emails.split(',') : []
+        const bcc_emails = email.bcc_emails ? email.bcc_emails.split(',') : []
+        let status_at
         return ses
           .sendEmail({
             Destination: {
@@ -50,19 +51,26 @@ export default function (sequelize, DataTypes) {
           })
           .promise()
           .then(data => {
+            status_at = moment(data.ResponseMetadata.HTTPHeaders.date, 'ddd, DD MMM YYYY HH:mm:ss Z')
             return Message
               .create({
                 email_id: email.id,
                 to_email: to_email,
                 ses_id: data.MessageId,
               })
-              .then(message => {
-                return StatusLog
-                  .create({
-                    message_id: message.id,
-                    status: Constants.EMAIL_STATUSES.SENT,
-                    status_at: moment(data.ResponseMetadata.HTTPHeaders.date, 'ddd, DD MMM YYYY HH:mm:ss Z'),
-                  })
+          })
+          .then(message => {
+            return StatusLog
+              .create({
+                message_id: message.id,
+                status: Constants.EMAIL_STATUSES.SENT,
+                status_at: status_at,
+              })
+              .then(statusLog => {
+                return {
+                  message: message,
+                  statusLog: statusLog,
+                }
               })
           })
       }

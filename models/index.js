@@ -1,9 +1,13 @@
 const debug = require('debug')('DB:Models')
 const globalModels = {
   Email: SequelizeInst.import('./email'),
+  EmailId: SequelizeInst.import('./emailId'),
   Message: SequelizeInst.import('./message'),
   StatusLog: SequelizeInst.import('./statusLog'),
+  Subscription: SequelizeInst.import('./subscription'),
+  SubscriptionList: SequelizeInst.import('./subscriptionList'),
   Template: SequelizeInst.import('./template'),
+  User: AccountsSequelizeInst.import('./user'),
 }
 Object
   .keys(SequelizeInst.models)

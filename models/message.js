@@ -22,7 +22,7 @@ export default function (sequelize, DataTypes) {
       associate(models) {
         Message.belongsTo(models.email, {
           onDelete: 'RESTRICT',
-        }),
+        })
         Message.hasMany(models.status_log, {
           onDelete: 'CASCADE',
         })

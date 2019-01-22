@@ -21,10 +21,6 @@ export default function (sequelize, DataTypes) {
       type: DataTypes.STRING(256),
       allowNull: false,
     },
-    default_from: {
-      type: DataTypes.STRING(64),
-      allowNull: true,
-    },
   }, {
     underscored: true,
     hooks: {},

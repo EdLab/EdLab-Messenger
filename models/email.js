@@ -52,6 +52,10 @@ export default function (sequelize, DataTypes) {
           Email.hasMany(models.message, {
             onDelete: 'RESTRICT',
           })
+          Email.belongsTo(models.subscription_list, {
+            onDelete: 'RESTRICT',
+            foreignKey: { allowNull: true },
+          })
         },
         sendScheduledEmails() {
           const now = moment()

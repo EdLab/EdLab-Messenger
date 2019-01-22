@@ -1,4 +1,4 @@
-TEMPLATE_FIELDS = ['name', 'description', 'subject', 'html', 'fields', 'default_from']
+TEMPLATE_FIELDS = ['id', 'name', 'description', 'subject', 'html', 'fields']
 
 export function list(_req, res, next) {
   const { p = 1 } = res.locals

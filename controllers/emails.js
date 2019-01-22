@@ -1,6 +1,6 @@
-EMAIL_FIELDS = ['subject', 'html', 'to_emails', 'cc_emails', 'bcc_emails', 'scheduled_at', 'from_email']
-MESSAGE_FIELDS = ['ses_id', 'to_email']
-STATUS_LOG_FIELDS = ['status', 'status_at', 'comment']
+EMAIL_FIELDS = ['id', 'subject', 'html', 'to_emails', 'cc_emails', 'bcc_emails', 'scheduled_at', 'from_email']
+MESSAGE_FIELDS = ['id', 'ses_id', 'to_email']
+STATUS_LOG_FIELDS = ['id', 'status', 'status_at', 'comment']
 NO_MESSAGES_QUERY = '(SELECT COUNT(`id`) FROM `messages` WHERE `email_id` = `email`.`id`)'
 
 export function list(_req, res, next) {
@@ -41,12 +41,13 @@ export function messages(_req, res, next) {
   Email
     .findByPk(id)
     .then(email => {
-      email.getMessages({
-        limit: AppConfig.PAGINATION_LIMIT,
-        offset: AppConfig.PAGINATION_LIMIT * Math.max(0, p - 1),
-        attributes: MESSAGE_FIELDS,
-        include: [ { model: StatusLog } ],
-      })
+      email
+        .getMessages({
+          limit: AppConfig.PAGINATION_LIMIT,
+          offset: AppConfig.PAGINATION_LIMIT * Math.max(0, p - 1),
+          attributes: MESSAGE_FIELDS,
+          include: [ { model: StatusLog } ],
+        })
     })
     .then(result => {
       res.json({
@@ -67,10 +68,10 @@ export function update(_req, res, next) {
       attributes: EMAIL_FIELDS,
     })
     .then(email => {
-        if (!email.scheduled_at || email.completed_at) {
-          return next(Response.Forbidden('Email already sent. Cannot update.'))
-        }
-        EMAIL_FIELDS.forEach(field => {
+      if (!email.scheduled_at || email.completed_at) {
+        return next(Response.Forbidden('Email already sent. Cannot update.'))
+      }
+      EMAIL_FIELDS.forEach(field => {
         if (res.locals[field]) {
           email[field] = res.locals[field]
         }
@@ -103,7 +104,12 @@ export function destroy(_req, res, next) {
   const { id = null } = res.locals
   Email
     .findByPk(id)
-    .then(email => email.destroy())
+    .then(email => {
+      if (!email.scheduled_at || email.completed_at) {
+        return next(Response.Forbidden('Email already sent. Cannot delete.'))
+      }
+      return email.destroy()
+    })
     .then(() => res.status(204).send({}))
     .catch(e => next(e))
 }

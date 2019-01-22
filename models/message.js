@@ -7,7 +7,7 @@ const ses = new AWS.SES()
 export default function (sequelize, DataTypes) {
   const Message = sequelize.define('message', {
     ses_id: {
-      type: DataTypes.STRING(256),
+      type: DataTypes.STRING(64),
       allowNull: false,
       unique: true,
     },

@@ -66,6 +66,7 @@ if (AppConfig.isProduction) {
 // Database and Models
 global.SequelizeInst = require('./lib/Database').default(AppConfig.DBCONFIG)
 Object.assign(global, require('./models').default)
+// SequelizeInst.sync()
 
 // Cron Tasks and Sitemap
 const CronTasks = require('./lib/Cron').start()

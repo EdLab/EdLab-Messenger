@@ -1,0 +1,30 @@
+{
+  "development": {
+    "username": "***REMOVED***",
+    "password": "***REMOVED***",
+    "database": "***REMOVED***",
+    "host": "mailer-dev.c3ecka0pmtwy.us-east-1.rds.amazonaws.com",
+    "dialect": "mysql"
+  },
+  "test": {
+    "username": "***REMOVED***",
+    "password": "***REMOVED***",
+    "database": "***REMOVED***",
+    "host": "mailer-dev.c3ecka0pmtwy.us-east-1.rds.amazonaws.com",
+    "dialect": "mysql"
+  },
+  "integration": {
+    "username": "***REMOVED***",
+    "password": "***REMOVED***",
+    "database": "***REMOVED***",
+    "host": "mailer-dev.c3ecka0pmtwy.us-east-1.rds.amazonaws.com",
+    "dialect": "mysql"
+  },
+  "production": {
+    "username": "***REMOVED***",
+    "password": "***REMOVED***",
+    "database": "***REMOVED***",
+    "host": "mailer-dev.c3ecka0pmtwy.us-east-1.rds.amazonaws.com",
+    "dialect": "mysql"
+  }
+}

@@ -1,3 +1,4 @@
 .vscode
 .idea
-static
+node_modules
+tmp

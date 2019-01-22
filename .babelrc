@@ -1,0 +1,41 @@
+{
+    "plugins": [
+        "@babel/plugin-proposal-object-rest-spread",
+        "@babel/plugin-proposal-class-properties",
+        ["@babel/plugin-proposal-decorators", { "legacy": true }]
+    ],
+    "ignore": [
+        "node_modules"
+    ],
+    "presets": [
+        [
+            "@babel/preset-env",
+            {
+                "targets": {
+                    "browsers": [
+                        "> 5%",
+                        "ie > 10"
+                    ],
+                    "node": "current"
+                }
+            }
+        ],
+    ],
+    "env": {
+        "development": {
+          "plugins": [],
+          "presets": []
+        },
+        "production": {
+          "plugins": [
+            "@babel/plugin-transform-member-expression-literals",
+            "@babel/plugin-transform-property-literals",
+            "transform-minify-booleans",
+            "transform-remove-console",
+            "transform-remove-debugger",
+            "transform-merge-sibling-variables"
+          ]
+        }
+      }
+
+}

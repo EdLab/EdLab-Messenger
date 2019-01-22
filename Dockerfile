@@ -1,15 +1,27 @@
-FROM python:3
+FROM node:11-alpine
 
-RUN apt-get update && apt-get install -y mysql-client &&\
-pip install pipenv
+LABEL maintainer="EdLab IT <edlabit@tc.columbia.edu>"
+
+ENV TZ='America/New_York'
+ENV NODE_ENV production
+
+RUN apk add --update \
+    python \
+    build-base \
+    tzdata
+
+RUN cp /usr/share/zoneinfo/$TZ /etc/localtime && \
+    echo $TZ > /etc/timezone
 
 WORKDIR /prj
+COPY ./package.json /prj/package.json
+COPY ./package-lock.json /prj/package-lock.json
+RUN npm i
 
-ADD Pipfile .
-ADD Pipfile.lock .
+COPY . /prj
 
-RUN pipenv install --system --deploy
+RUN npm run build
 
-ADD . .
+EXPOSE 8000
 
-CMD uwsgi --ini uwsgi.ini
+ENTRYPOINT ["npm", "run"]

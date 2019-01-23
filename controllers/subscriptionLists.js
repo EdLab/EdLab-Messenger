@@ -59,17 +59,37 @@ export function updateSubscriptions(_req, res, next) {
 
 export function addSubscription(_req, res, next) {
   const { id = null, user_uid = null } = res.locals
-  SubscriptionList
-    .findByPk(id)
-    .then(subscriptionList => {
-      subscriptionList.addSubscription({ user_uid: user_uid })
+  Subscription
+    .findOrCreate({
+      where: {
+        user_uid: user_uid,
+        subscription_list_id: id,
+      }
+    })
+    .spread((subscription, _created) => {
+      // if (!created) {
+      //   return next(Response.Invalid('Subscription already exists'))
+      // }
+      return res.json(subscription)
+    })
+    .catch(e => next(e))
+}
+
+export function removeSubscription(_req, res, next) {
+  const { id = null, user_uid = null } = res.locals
+  Subscription
+    .destroy({
+      where: {
+        user_uid: user_uid,
+        subscription_list_id: id,
+      }
     })
     .then(response => res.json(response))
     .catch(e => next(e))
 }
 
 export function update(_req, res, next) {
-  const { id = null} = res.locals
+  const { id = null } = res.locals
   SubscriptionList
     .findByPk(id)
     .then(subscriptionList => {

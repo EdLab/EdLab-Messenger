@@ -1,4 +1,5 @@
-const EMAIL_FIELDS = ['id', 'subject', 'html', 'to_emails', 'cc_emails', 'bcc_emails', 'scheduled_at', 'from_email']
+const EMAIL_FIELDS = ['id', 'subject', 'html', 'to_emails', 'cc_emails', 'bcc_emails',
+                      'scheduled_at', 'from_email', 'subscription_list_id']
 const MESSAGE_FIELDS = ['id', 'ses_id', 'to_email']
 // const STATUS_LOG_FIELDS = ['id', 'status', 'status_at', 'comment']
 const NO_MESSAGES_QUERY = '(SELECT COUNT(`id`) FROM `messages` WHERE `email_id` = `email`.`id`)'

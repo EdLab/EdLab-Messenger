@@ -16,7 +16,7 @@ export default function (sequelize, DataTypes) {
       },
       to_emails: {
         type: DataTypes.TEXT('long'),
-        allowNull: false,
+        allowNull: true,
       },
       cc_emails: {
         type: DataTypes.STRING(1024),
@@ -56,6 +56,14 @@ export default function (sequelize, DataTypes) {
               .catch(error => {
                 Logger.log(error)
               })
+          }
+        }
+      },
+      validate: {
+        toEmailsOrList() {
+          if ((this.subscription_list_id && this.to_emails) ||
+              (!this.subscription_list_id && !this.to_emails)) {
+            throw new Error('Require (only) one of `to_emails` and `subscription_list_id` fields')
           }
         }
       },

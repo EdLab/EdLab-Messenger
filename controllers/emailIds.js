@@ -1,4 +1,4 @@
-EMAIL_ID_FIELDS = ['id', 'sender', 'email']
+const EMAIL_ID_FIELDS = ['id', 'sender', 'email']
 
 export function list(_req, res, next) {
   EmailId

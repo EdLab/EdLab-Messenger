@@ -1,7 +1,7 @@
-USER_FIELDS = ['uid', 'email', 'firstname', 'lastname', 'username']
-SUBSCRIPTION_FIELDS = ['user_uid', 'subscription_list_id']
-SUBSCRIPTION_LIST_FIELDS = ['id', 'name', 'description', 'default_from_id']
-EMAIL_ID_FIELDS = ['sender', 'email']
+const USER_FIELDS = ['uid', 'email', 'firstname', 'lastname', 'username']
+const SUBSCRIPTION_FIELDS = ['user_uid', 'subscription_list_id']
+const SUBSCRIPTION_LIST_FIELDS = ['id', 'name', 'description', 'default_from_id']
+const EMAIL_ID_FIELDS = ['sender', 'email']
 
 export function list(_req, res, next) {
   const { p = 1 } = res.locals
@@ -52,6 +52,17 @@ export function updateSubscriptions(_req, res, next) {
         return { user_uid: uid }
       })
       subscriptionList.setSubscriptions(subscriptions)
+    })
+    .then(response => res.json(response))
+    .catch(e => next(e))
+}
+
+export function addSubscription(_req, res, next) {
+  const { id = null, user_uid = null } = res.locals
+  SubscriptionList
+    .findByPk(id)
+    .then(subscriptionList => {
+      subscriptionList.addSubscription({ user_uid: user_uid })
     })
     .then(response => res.json(response))
     .catch(e => next(e))

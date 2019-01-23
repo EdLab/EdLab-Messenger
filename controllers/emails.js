@@ -1,7 +1,7 @@
-EMAIL_FIELDS = ['id', 'subject', 'html', 'to_emails', 'cc_emails', 'bcc_emails', 'scheduled_at', 'from_email']
-MESSAGE_FIELDS = ['id', 'ses_id', 'to_email']
-STATUS_LOG_FIELDS = ['id', 'status', 'status_at', 'comment']
-NO_MESSAGES_QUERY = '(SELECT COUNT(`id`) FROM `messages` WHERE `email_id` = `email`.`id`)'
+const EMAIL_FIELDS = ['id', 'subject', 'html', 'to_emails', 'cc_emails', 'bcc_emails', 'scheduled_at', 'from_email']
+const MESSAGE_FIELDS = ['id', 'ses_id', 'to_email']
+// const STATUS_LOG_FIELDS = ['id', 'status', 'status_at', 'comment']
+const NO_MESSAGES_QUERY = '(SELECT COUNT(`id`) FROM `messages` WHERE `email_id` = `email`.`id`)'
 
 export function list(_req, res, next) {
   const { p = 1 } = res.locals

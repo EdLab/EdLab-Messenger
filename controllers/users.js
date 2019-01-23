@@ -1,7 +1,7 @@
-USER_FIELDS = ['uid', 'email', 'firstname', 'lastname', 'username']
-SUBSCRIPTION_FIELDS = ['user_uid', 'subscription_list_id']
-SUBSCRIPTION_LIST_FIELDS = ['id', 'name', 'description']
-EMAIL_ID_FIELDS = ['sender', 'email']
+const USER_FIELDS = ['uid', 'email', 'firstname', 'lastname', 'username']
+const SUBSCRIPTION_FIELDS = ['user_uid', 'subscription_list_id']
+const SUBSCRIPTION_LIST_FIELDS = ['id', 'name', 'description']
+const EMAIL_ID_FIELDS = ['sender', 'email']
 
 export function list(_req, res, next) {
   const { p = 1 } = res.locals

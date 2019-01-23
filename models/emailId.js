@@ -13,19 +13,13 @@ export default function (sequelize, DataTypes) {
   }, {
     underscored: true,
     hooks: {},
-    classMethods: {
-      associate(models) {
-        EmailId.hasMany(models.subscription_list, {
-          onDelete: 'CASCADE',
-          foreignKey: {
-            name: 'default_from',
-            allowNull: true
-          },
-        })
-      },
-    },
+    classMethods: {},
     instanceMethods: {},
   })
+
+  EmailId.associate = (models) => {
+    EmailId.hasMany(models.subscription_list)
+  }
 
   return EmailId
 }

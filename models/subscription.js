@@ -7,15 +7,15 @@ export default function (sequelize, DataTypes) {
   }, {
     underscored: true,
     hooks: {},
-    classMethods: {
-      associate(models) {
-        Subscription.belongsTo(models.subscription_list, {
-          onDelete: 'CASCADE',
-        })
-      },
-    },
+    classMethods: {},
     instanceMethods: {},
   })
+
+  Subscription.associate = (models) => {
+    Subscription.belongsTo(models.subscription_list, {
+      onDelete: 'CASCADE',
+    })
+  }
 
   return Subscription
 }

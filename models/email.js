@@ -68,15 +68,6 @@ export default function (sequelize, DataTypes) {
         }
       },
       classMethods: {
-        associate(models) {
-          Email.hasMany(models.message, {
-            onDelete: 'RESTRICT',
-          })
-          Email.belongsTo(models.subscription_list, {
-            onDelete: 'RESTRICT',
-            foreignKey: { allowNull: true },
-          })
-        },
         sendScheduledEmails() {
           const now = moment()
           Email
@@ -178,6 +169,16 @@ export default function (sequelize, DataTypes) {
         }
       }
     })
+
+    Email.associate = (models) => {
+      Email.hasMany(models.message, {
+        onDelete: 'RESTRICT',
+      })
+      Email.belongsTo(models.subscription_list, {
+        onDelete: 'RESTRICT',
+        foreignKey: { allowNull: true },
+      })
+    }
 
     return Email
   }

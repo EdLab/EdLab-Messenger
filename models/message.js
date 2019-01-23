@@ -19,14 +19,6 @@ export default function (sequelize, DataTypes) {
     underscored: true,
     hooks: {},
     classMethods: {
-      associate(models) {
-        Message.belongsTo(models.email, {
-          onDelete: 'RESTRICT',
-        })
-        Message.hasMany(models.status_log, {
-          onDelete: 'CASCADE',
-        })
-      },
       send(email, to_email) {
         const html = email.html
         const cc_emails = email.cc_emails ? email.cc_emails.split(',') : []
@@ -82,6 +74,15 @@ export default function (sequelize, DataTypes) {
     },
     instanceMethods: {},
   })
+
+  Message.associate = (models) => {
+    Message.belongsTo(models.email, {
+      onDelete: 'RESTRICT',
+    })
+    Message.hasMany(models.status_log, {
+      onDelete: 'CASCADE',
+    })
+  }
 
   return Message
 }

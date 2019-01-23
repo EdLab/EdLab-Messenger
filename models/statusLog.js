@@ -19,11 +19,6 @@ export default function (sequelize, DataTypes) {
       underscored: true,
       hooks: {},
       classMethods: {
-        associate(models) {
-          StatusLog.belongsTo(models.message, {
-            onDelete: 'CASCADE',
-          })
-        },
         updateStatuses() {
           let deleteBatchParams
           const processMessages = () => {
@@ -84,6 +79,12 @@ export default function (sequelize, DataTypes) {
       },
       instanceMethods: {},
     })
+
+    StatusLog.associate = (models) => {
+      StatusLog.belongsTo(models.message, {
+        onDelete: 'CASCADE',
+      })
+    }
 
     return StatusLog
   }

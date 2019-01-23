@@ -12,24 +12,24 @@ export default function (sequelize, DataTypes) {
   }, {
     underscored: true,
     hooks: {},
-    classMethods: {
-      associate(models) {
-        SubscriptionList.belongsTo(models.email_id, {
-          onDelete: 'SET NULL',
-          as: 'default_from',
-          foreignKey: { allowNull: true },
-        })
-        SubscriptionList.hasMany(models.subscription, {
-          onDelete: 'CASCADE',
-        })
-        SubscriptionList.hasMany(models.email, {
-          onDelete: 'RESTRICT',
-          foreignKey: { allowNull: true },
-        })
-      },
-    },
+    classMethods: {},
     instanceMethods: {},
   })
+
+  SubscriptionList.associate = (models) => {
+    SubscriptionList.belongsTo(models.email_id, {
+      onDelete: 'SET NULL',
+      as: 'default_from',
+      foreignKey: { allowNull: true },
+    })
+    SubscriptionList.hasMany(models.subscription, {
+      onDelete: 'CASCADE',
+    })
+    SubscriptionList.hasMany(models.email, {
+      onDelete: 'RESTRICT',
+      foreignKey: { allowNull: true },
+    })
+  }
 
   return SubscriptionList
 }

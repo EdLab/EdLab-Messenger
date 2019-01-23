@@ -123,9 +123,7 @@ export default function (sequelize, DataTypes) {
           }
           const to_emails = email.to_emails.split(',')
           const len = to_emails.length
-          let sleepTime
-          let startTime
-          let sendRate
+          let sleepTime, startTime, sendRate
           let noSuccess = 0
           let noFailed = 0
           const sendMessage = () => {

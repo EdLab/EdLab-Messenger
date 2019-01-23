@@ -90,7 +90,11 @@ router.use('/emails',
       getParam('subscription_list_id', { parser: 'integer' }),
       getController('emails').create
     )
-    emailRouter.delete('/:id', getParam('id', { parser: 'integer' }), getController('emails').destroy)
+    emailRouter.delete(
+      '/:id',
+      getParam('id', { parser: 'integer' }),
+      getController('emails').destroy
+    )
     return emailRouter
   })()
 )

@@ -31,7 +31,6 @@ export default function (sequelize, DataTypes) {
         const html = email.html
         const cc_emails = email.cc_emails ? email.cc_emails.split(',') : []
         const bcc_emails = email.bcc_emails ? email.bcc_emails.split(',') : []
-        let status_at
         return ses
           .sendEmail({
             Destination: {
@@ -51,27 +50,33 @@ export default function (sequelize, DataTypes) {
           })
           .promise()
           .then(data => {
-            status_at = moment(data.ResponseMetadata.HTTPHeaders.date, 'ddd, DD MMM YYYY HH:mm:ss Z')
-            return Message
+            const status_at = moment(
+              data.ResponseMetadata.HTTPHeaders.date,
+              'ddd, DD MMM YYYY HH:mm:ss Z'
+            )
+            Logger.log(
+              `Sent message successfully;
+               ses_id: ${ data.MessageId };
+               sending completed at ${ status_at }`
+            )
+            Message
               .create({
                 email_id: email.id,
                 to_email: to_email,
                 ses_id: data.MessageId,
               })
-          })
-          .then(message => {
-            return StatusLog
-              .create({
-                message_id: message.id,
-                status: Constants.EMAIL_STATUSES.SENT,
-                status_at: status_at,
+              .then(message => {
+                StatusLog
+                  .create({
+                    message_id: message.id,
+                    status: Constants.EMAIL_STATUSES.SENT,
+                    status_at: status_at,
+                  })
               })
-              .then(statusLog => {
-                return {
-                  message: message,
-                  statusLog: statusLog,
-                }
+              .catch(error => {
+                Logger.error(`Saving sent message failed: ${ error }`)
               })
+            Promise.resolve()
           })
       }
     },

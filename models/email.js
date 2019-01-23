@@ -43,7 +43,19 @@ export default function (sequelize, DataTypes) {
       hooks: {
         afterCreate(email) {
           if (email.scheduled_at === null) {
-            email.send()
+            email
+              .send()
+              .then(result => {
+                Logger.log(
+                  `Email sending completed at ${ result.completed_at };
+                   id: ${ result.id };
+                   ${ result.noSuccess } successfully sent messages;
+                   ${ result.noFailed } failed messges`
+                )
+              })
+              .catch(error => {
+                Logger.log(error)
+              })
           }
         }
       },
@@ -120,16 +132,13 @@ export default function (sequelize, DataTypes) {
             const next = () => {
               if (noSuccess + noFailed === len) {
                 const completed_at = moment()
-                return email
-                  .update({ completed_at: completed_at })
-                  .then(() => {
-                    return Promise.resolve({
-                      id: email.id,
-                      completed_at: completed_at,
-                      noSuccess: noSuccess,
-                      noFailed: noFailed
-                    })
-                  })
+                email.update({ completed_at: completed_at })
+                return Promise.resolve({
+                  id: email.id,
+                  completed_at: completed_at,
+                  noSuccess: noSuccess,
+                  noFailed: noFailed
+                })
               }
               if ((noSuccess + noFailed) / moment().diff(startTime, 'seconds') >= sendRate) {
                 return new Promise(() => {
@@ -141,14 +150,7 @@ export default function (sequelize, DataTypes) {
             }
             return Message
               .send(email, to_emails[noSuccess + noFailed])
-              .then(result => {
-                const statusLog = result.statusLog
-                Logger.log(
-                  `Sent message successfully;
-                   ses_id: ${ result.message.ses_id };
-                   status: ${ statusLog.status };
-                   sending completed at ${ statusLog.status_at }`
-                )
+              .then(() => {
                 noSuccess++
                 next()
               })

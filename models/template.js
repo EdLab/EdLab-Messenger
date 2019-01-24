@@ -24,9 +24,6 @@ export default function (sequelize, DataTypes) {
   }, {
     underscored: true,
     hooks: {},
-    classMethods: {
-      // associate(models) {},
-    }
   })
 
   return Template

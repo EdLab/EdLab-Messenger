@@ -1,9 +1,9 @@
-const EMAIL_ID_FIELDS = ['id', 'sender', 'email']
+const FROM_EMAIL_FIELDS = ['id', 'sender', 'email']
 
 export function list(_req, res, next) {
-  EmailId
+  FromEmail
     .findAndCountAll({
-      attributes: EMAIL_ID_FIELDS,
+      attributes: FROM_EMAIL_FIELDS,
     })
     .then(result => {
       res.json({

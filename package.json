@@ -10,7 +10,7 @@
     "dev": "pm2 start ecosystem.config.js --only ***REMOVED***-dev --no-daemon",
     "int": "pm2-docker start ecosystem.config.js --only ***REMOVED***-int",
     "prod": "pm2-docker start ecosystem.config.js --only ***REMOVED***-prod",
-    "build": "npm run clean && babel server --copy-files -d dist",
+    "build": "npm run clean && babel index.js --copy-files -d dist",
     "clean": "rimraf public/*",
     "migrate": "sequelize --config config/DatabaseConfig.json db:migrate",
     "test": "NODE_ENV=test mocha \"tests/*.test.js\" --exit",
@@ -51,10 +51,12 @@
     "pm2": "^3.2.8",
     "rimraf": "^2.6.3",
     "sequelize": "^4.42.0",
+    "string-template": "^1.0.0",
     "textversionjs": "^1.1.3"
   },
   "devDependencies": {
     "apidoc": "^0.17.7",
+    "babel-eslint": "^10.0.1",
     "sequelize-cli": "^5.4.0"
   }
 }

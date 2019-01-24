@@ -1,5 +1,5 @@
 export default function (sequelize, DataTypes) {
-  const EmailId = sequelize.define('email_id', {
+  const FromEmail = sequelize.define('from_email', {
     sender: {
       type: DataTypes.STRING(64),
       allowNull: false,
@@ -13,13 +13,17 @@ export default function (sequelize, DataTypes) {
   }, {
     underscored: true,
     hooks: {},
-    classMethods: {},
-    instanceMethods: {},
   })
 
-  EmailId.associate = (models) => {
-    EmailId.hasMany(models.subscription_list)
+  FromEmail.associate = (models) => {
+    FromEmail.hasMany(models.email, {
+      onDelete: 'RESTRICT'
+    })
   }
 
-  return EmailId
+  FromEmail.prototype.getEmailAddress = function() {
+    return `${ this.sender } <${ this.email }>`
+  }
+
+  return FromEmail
 }

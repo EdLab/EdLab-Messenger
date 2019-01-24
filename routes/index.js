@@ -70,11 +70,11 @@ router.use('/emails',
       getParam('id', { parser: 'integer' }),
       getParam('subject', { parser: 'string' }),
       getParam('html', { parser: 'string' }),
-      getParam('to_emails', { parser: 'string' }),
-      getParam('cc_emails', { parser: 'string' }),
-      getParam('bcc_emails', { parser: 'string' }),
+      getParam('to_user_uids', { parser: 'string' }),
+      getParam('cc_user_uids', { parser: 'string' }),
+      getParam('bcc_user_uids', { parser: 'string' }),
       getParam('scheduled_at', { parser: 'string' }),
-      getParam('from_email', { parser: 'string' }),
+      getParam('from_email_id', { parser: 'integer' }),
       getParam('subscription_list_id', { parser: 'integer' }),
       getController('emails').update
     )
@@ -82,11 +82,11 @@ router.use('/emails',
       '/',
       getParam('subject', { parser: 'string' }),
       getParam('html', { parser: 'string' }),
-      getParam('to_emails', { parser: 'string' }),
-      getParam('cc_emails', { parser: 'string' }),
-      getParam('bcc_emails', { parser: 'string' }),
+      getParam('to_user_uids', { parser: 'string' }),
+      getParam('cc_user_uids', { parser: 'string' }),
+      getParam('bcc_user_uids', { parser: 'string' }),
       getParam('scheduled_at', { parser: 'string' }),
-      getParam('from_email', { parser: 'string' }),
+      getParam('from_email_id', { parser: 'integer' }),
       getParam('subscription_list_id', { parser: 'integer' }),
       getController('emails').create
     )
@@ -99,26 +99,17 @@ router.use('/emails',
   })()
 )
 
-router.use('/email_ids',
+router.use('/from_emails',
   ((emailIdRouter = Router()) => {
     emailIdRouter.get(
       '/',
       getParam('p', { parser: 'integer' }),
-      getController('emailIds').list
+      getController('fromEmails').list
     )
-    // emailIdRouter.put(
-    //   '/:id',
-    //   getParam('id', { parser: 'integer' }),
-    //   getController('emailIds').update
-    // )
-    // emailIdRouter.post(
-    //   '/',
-    //   getController('emailIds').create
-    // )
     emailIdRouter.delete(
       '/:id',
       getParam('id', { parser: 'integer' }),
-      getController('emailIds').destroy
+      getController('fromEmails').destroy
     )
     return emailIdRouter
   })()
@@ -160,14 +151,12 @@ router.use('/subscription_lists',
       getParam('id', { parser: 'integer' }),
       getParam('name', { parser: 'string' }),
       getParam('description', { parser: 'string' }),
-      getParam('default_from_id', { parser: 'integer' }),
       getController('subscriptionLists').update
     )
     subscriptionListRouter.post(
       '/',
       getParam('name', { parser: 'string' }),
       getParam('description', { parser: 'string' }),
-      getParam('default_from_id', { parser: 'integer' }),
       getController('subscriptionLists').create
     )
     subscriptionListRouter.delete(

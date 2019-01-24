@@ -1,6 +1,6 @@
-const EMAIL_FIELDS = ['id', 'subject', 'html', 'to_emails', 'cc_emails', 'bcc_emails',
-                      'scheduled_at', 'from_email', 'subscription_list_id']
-const MESSAGE_FIELDS = ['id', 'ses_id', 'to_email']
+const EMAIL_FIELDS = ['id', 'subject', 'html', 'to_user_uids', 'cc_user_uids', 'bcc_user_uids',
+                      'scheduled_at', 'from_email_id', 'subscription_list_id']
+const MESSAGE_FIELDS = ['id', 'ses_id', 'to_user_uid']
 // const STATUS_LOG_FIELDS = ['id', 'status', 'status_at', 'comment']
 const NO_MESSAGES_QUERY = '(SELECT COUNT(`id`) FROM `messages` WHERE `email_id` = `email`.`id`)'
 
@@ -60,9 +60,16 @@ export function messages(_req, res, next) {
 }
 
 export function update(_req, res, next) {
-  const { id = null, scheduled_at = null } = res.locals
+  const { id = null, scheduled_at = null,
+    subscription_list_id = null, to_user_uids = null } = res.locals
   if (scheduled_at && new Date(scheduled_at) < new Date()) {
     return next(Response.Invalid('Scheduled time earlier than now'))
+  }
+  if ((subscription_list_id && to_user_uids) || (!subscription_list_id && !to_user_uids)) {
+    throw new Error('Require (only) one of `to_user_uids` and `subscription_list_id` fields')
+  }
+  if (subscription_list_id && !scheduled_at) {
+    return next(Response.Invalid('Require scheduling time when sending to a subscription list'))
   }
   Email
     .findByPk(id, {
@@ -85,11 +92,17 @@ export function update(_req, res, next) {
 }
 
 export function create(_req, res, next) {
-  const { scheduled_at = null } = res.locals
+  const { scheduled_at = null, subscription_list_id = null, to_user_uids = null } = res.locals
   if (scheduled_at && new Date(scheduled_at) < new Date()) {
     return next(Response.Invalid('Scheduled time earlier than now'))
   }
-  emailData = {}
+  if ((subscription_list_id && to_user_uids) || (!subscription_list_id && !to_user_uids)) {
+    return next(Response.Invalid('Require (only) one of `to_user_uids` and `subscription_list_id` fields'))
+  }
+  if (subscription_list_id && !scheduled_at) {
+    return next(Response.Invalid('Require scheduling time when sending to a subscription list'))
+  }
+  const emailData = {}
   EMAIL_FIELDS.forEach(field => {
     if (res.locals[field]) {
       emailData[field] = res.locals[field]
@@ -107,7 +120,7 @@ export function destroy(_req, res, next) {
     .findByPk(id)
     .then(email => {
       if (!email.scheduled_at || email.completed_at) {
-        return next(Response.Forbidden('Email already sent. Cannot delete.'))
+        return Promise.reject(Response.Forbidden('Email already sent. Cannot delete.'))
       }
       return email.destroy()
     })

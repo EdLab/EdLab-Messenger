@@ -12,16 +12,9 @@ export default function (sequelize, DataTypes) {
   }, {
     underscored: true,
     hooks: {},
-    classMethods: {},
-    instanceMethods: {},
   })
 
   SubscriptionList.associate = (models) => {
-    SubscriptionList.belongsTo(models.email_id, {
-      onDelete: 'SET NULL',
-      as: 'default_from',
-      foreignKey: { allowNull: true },
-    })
     SubscriptionList.hasMany(models.subscription, {
       onDelete: 'CASCADE',
     })

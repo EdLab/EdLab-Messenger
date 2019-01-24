@@ -1,7 +1,7 @@
 const debug = require('debug')('DB:Models')
 const globalModels = {
   Email: SequelizeInst.import('./email'),
-  EmailId: SequelizeInst.import('./emailId'),
+  FromEmail: SequelizeInst.import('./fromEmail'),
   Message: SequelizeInst.import('./message'),
   StatusLog: SequelizeInst.import('./statusLog'),
   Subscription: SequelizeInst.import('./subscription'),

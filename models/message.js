@@ -1,3 +1,4 @@
+var format = require("string-template")
 import createTextVersion from 'textversionjs'
 import moment from 'moment'
 import AWS from '../lib/AWS.js'
@@ -11,68 +12,13 @@ export default function (sequelize, DataTypes) {
       allowNull: false,
       unique: true,
     },
-    to_email: {
-      type: DataTypes.STRING(64),
+    to_user_uid: {
+      type: DataTypes.STRING(128),
       allowNull: false,
     },
   }, {
     underscored: true,
     hooks: {},
-    classMethods: {
-      send(email, to_email) {
-        const html = email.html
-        const cc_emails = email.cc_emails ? email.cc_emails.split(',') : []
-        const bcc_emails = email.bcc_emails ? email.bcc_emails.split(',') : []
-        return ses
-          .sendEmail({
-            Destination: {
-              BccAddresses: bcc_emails,
-              CcAddresses: cc_emails,
-              ToAddresses: [to_email],
-            },
-            Message: {
-              Subject: { Data: email.subject },
-              Body: {
-                Html: { Data: html },
-                Text: { Data: createTextVersion(html) },
-              }
-            },
-            Source: email.from_email,
-            ConfigurationSetName: AppConfig.SES_CONFIGURATION_SET,
-          })
-          .promise()
-          .then(data => {
-            const status_at = moment(
-              data.ResponseMetadata.HTTPHeaders.date,
-              'ddd, DD MMM YYYY HH:mm:ss Z'
-            )
-            Logger.log(
-              `Sent message successfully;
-               ses_id: ${ data.MessageId };
-               sending completed at ${ status_at }`
-            )
-            Message
-              .create({
-                email_id: email.id,
-                to_email: to_email,
-                ses_id: data.MessageId,
-              })
-              .then(message => {
-                StatusLog
-                  .create({
-                    message_id: message.id,
-                    status: Constants.EMAIL_STATUSES.SENT,
-                    status_at: status_at,
-                  })
-              })
-              .catch(error => {
-                Logger.error(`Saving sent message failed: ${ error }`)
-              })
-            Promise.resolve()
-          })
-      }
-    },
-    instanceMethods: {},
   })
 
   Message.associate = (models) => {
@@ -82,6 +28,54 @@ export default function (sequelize, DataTypes) {
     Message.hasMany(models.status_log, {
       onDelete: 'CASCADE',
     })
+  }
+
+  Message.send = (email, to_user, from_email_address, cc_emails = [], bcc_emails = []) => {
+    const html = format(email.html, to_user.get({ plain: true }))
+    return ses
+      .sendEmail({
+        Destination: {
+          BccAddresses: bcc_emails,
+          CcAddresses: cc_emails,
+          ToAddresses: [to_user.getEmailAddress()],
+        },
+        Message: {
+          Subject: { Data: email.subject },
+          Body: {
+            Html: { Data: html },
+            Text: { Data: createTextVersion(html) },
+          }
+        },
+        Source: from_email_address,
+        ConfigurationSetName: AppConfig.SES_CONFIGURATION_SET,
+      })
+      .promise()
+      .then(data => {
+        const status_at = moment()
+        Logger.debug(
+          `Sent message successfully;
+           ses_id: ${ data.MessageId };
+           sending completed at ${ status_at }`
+        )
+        Message
+          .create({
+            email_id: email.id,
+            to_user_uid: to_user.uid,
+            ses_id: data.MessageId,
+          })
+          .then(message => {
+            StatusLog
+              .create({
+                message_id: message.id,
+                status: 'sent',
+                status_at: status_at,
+              })
+          })
+          .catch(error => {
+            Logger.error(`Saving sent message failed: ${ error }`)
+          })
+        Promise.resolve()
+      })
   }
 
   return Message

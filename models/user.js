@@ -26,5 +26,9 @@ export default function (sequelize, DataTypes) {
     timestamps: false,
   })
 
+  User.prototype.getEmailAddress = function () {
+    return `${ this.firstname } ${ this.lastname } <${ this.email }>`
+  }
+
   return User
 }

@@ -1,9 +1,7 @@
 const Op = SequelizeInst.Op
 
-const USER_FIELDS = ['uid', 'email', 'firstname', 'lastname', 'username']
 const SUBSCRIPTION_FIELDS = ['user_uid', 'subscription_list_id']
 const SUBSCRIPTION_LIST_FIELDS = ['id', 'name', 'description']
-const EMAIL_ID_FIELDS = ['sender', 'email']
 
 export function list(_req, res, next) {
   const { p = 1 } = res.locals
@@ -12,7 +10,6 @@ export function list(_req, res, next) {
       limit: AppConfig.PAGINATION_LIMIT,
       offset: AppConfig.PAGINATION_LIMIT * Math.max(0, p - 1),
       attributes: SUBSCRIPTION_LIST_FIELDS,
-      include: [ { model: EmailId, attributes: EMAIL_ID_FIELDS } ],
     })
     .then(result => {
       res.json({
@@ -28,12 +25,12 @@ export function subscriptions(_req, res, next) {
   SubscriptionList
     .findByPk(id)
     .then(subscriptionList => {
-      subscriptionList
-        .getSubscriptions({
+      return Subscription
+        .findAndCountAll({
+          where: { subscription_list_id: subscriptionList.id },
           limit: AppConfig.PAGINATION_LIMIT,
           offset: AppConfig.PAGINATION_LIMIT * Math.max(0, p - 1),
           attributes: SUBSCRIPTION_FIELDS,
-          include: [ { model: User, attributes: USER_FIELDS } ],
         })
     })
     .then(result => {

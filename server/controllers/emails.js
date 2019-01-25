@@ -42,8 +42,9 @@ export function messages(_req, res, next) {
   Email
     .findByPk(id)
     .then(email => {
-      email
-        .getMessages({
+      return Message
+        .findAndCountAll({
+          where: { email_id: email.id },
           limit: AppConfig.PAGINATION_LIMIT,
           offset: AppConfig.PAGINATION_LIMIT * Math.max(0, p - 1),
           attributes: MESSAGE_FIELDS,

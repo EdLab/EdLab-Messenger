@@ -20,12 +20,13 @@ export function list(_req, res, next) {
 }
 
 export function subscriptions(_req, res, next) {
-  const { id = null, p = 1 } = res.locals
+  const { uid = null, p = 1 } = res.locals
+  console.log(uid)
   User
-    .findByPk(id)
+    .findByPk(uid)
     .then(user => {
-      Subscription
-        .findAll({
+      return Subscription
+        .findAndCountAll({
           limit: AppConfig.PAGINATION_LIMIT,
           offset: AppConfig.PAGINATION_LIMIT * Math.max(0, p - 1),
           where: { user_uid: user.uid },

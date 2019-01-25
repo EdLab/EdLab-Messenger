@@ -176,8 +176,8 @@ router.use('/users',
       getController('users').list
     )
     userRouter.get(
-      '/:id/subscriptions',
-      getParam('id', { parser: 'integer' }),
+      '/:uid/subscriptions',
+      getParam('uid', { parser: 'string' }),
       getParam('p', { parser: 'string' }),
       getController('users').subscriptions
     )

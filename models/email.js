@@ -55,18 +55,20 @@ export default function (sequelize, DataTypes) {
         foreignKey: { allowNull: true },
       })
       Email.belongsTo(models.from_email, {
-        onDelete: 'RESTRICT'
+        onDelete: 'RESTRICT',
+        foreignKey: { allowNull: false },
       })
     }
 
     Email.sendScheduledEmails = () => {
-      const now = moment()
+      const end = moment()
+      const start = moment(end).subtract(10, 'minutes')
       Email
         .findAll({
           where: {
             scheduled_at: {
-              [Op.gte]: now.subtract(10, 'minutes'),
-              [Op.lt]: now,
+              [Op.gt]: start,
+              [Op.lte]: end,
             }
           }
         })
@@ -177,12 +179,13 @@ export default function (sequelize, DataTypes) {
             const subscriptions = email.subscription_list.subscriptions
             to_user_uids = subscriptions.map(s => s.user_uid)
           }
-          const userOptions = (user_uids = '') => {
-            if (!user_uids) { user_uids = '' }
+          const cc_user_uids = email.cc_user_uids ? email.cc_user_uids.split(',') : []
+          const bcc_user_uids = email.bcc_user_uids ? email.bcc_user_uids.split(',') : []
+          const userOptions = (user_uids = []) => {
             return {
               where: {
                 uid: {
-                  [Op.in]: user_uids.split(',')
+                  [Op.in]: user_uids
                 }
               },
               attributes: ['uid', 'email', 'firstname', 'lastname', 'username'],
@@ -194,12 +197,12 @@ export default function (sequelize, DataTypes) {
               to_users = users
             })
           const ccUsersPromise = User
-            .findAll(userOptions(email.cc_user_uids))
+            .findAll(userOptions(cc_user_uids))
             .then(users => {
               cc_emails = users.map(u => u.getEmailAddress())
             })
           const bccUsersPromise = User
-            .findAll(userOptions(email.bcc_user_uids))
+            .findAll(userOptions(bcc_user_uids))
             .then(users => {
               bcc_emails = users.map(u => u.getEmailAddress())
             })

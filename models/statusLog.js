@@ -60,25 +60,28 @@ export default function (sequelize, DataTypes) {
                 Message
                   .findOne({ where: { ses_id: log['mail']['messageId'] } })
                   .then(message => {
-                    statusLogs.push({
-                      status: log['eventType'],
-                      message_id: message.id,
-                      status_at: log['mail']['timestamp'],
-                      comment: JSON.stringify(log['mail'])
-                    })
+                    if (message) {
+                      statusLogs.push({
+                        status: log['eventType'],
+                        message_id: message.id,
+                        status_at: log['mail']['timestamp'],
+                        comment: JSON.stringify(log['mail'])
+                      })
+                    }
                   })
               )
             })
-            return Promise.all(promises)
-          })
-          .then(() => StatusLog.bulkCreate(statusLogs))
-          .then(() => {
-            Logger.debug(`Created ${ messages.length } entries in StatusLog table`)
-            sqs.deleteMessageBatch(deleteBatchParams).promise()
-          })
-          .then(() => {
-            Logger.debug(`Deleted message batch from SQS`)
-            processMessages()
+            return Promise
+              .all(promises)
+              .then(() => StatusLog.bulkCreate(statusLogs))
+              .then(() => {
+                Logger.debug(`Created ${ messages.length } entries in StatusLog table`)
+                sqs.deleteMessageBatch(deleteBatchParams).promise()
+              })
+              .then(() => {
+                Logger.debug(`Deleted message batch from SQS`)
+                processMessages()
+              })
           })
           .catch(error => Logger.error(error))
       }

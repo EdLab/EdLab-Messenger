@@ -10,7 +10,7 @@ import { init, Handlers } from '@sentry/node'
 
 import publicConfig from './config/app_config'
 import privateConfig from './config/app_config_private'
-import { version } from './jenkins.json'
+import { version } from '../jenkins.json'
 const localConfig = require('dotenv').config()
 
 global.AppConfig = Object.assign(

@@ -3,7 +3,7 @@ module.exports = {
     {
       name: '***REMOVED***-dev',
       node_args: '--max-old-space-size=2048',
-      script: 'index.js',
+      script: 'server/index.js',
       watch: true,
       ignore_watch: ['node_modules', '.git', 'tmp'],
       watch_options: {

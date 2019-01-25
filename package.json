@@ -10,7 +10,7 @@
     "dev": "pm2 start ecosystem.config.js --only ***REMOVED***-dev --no-daemon",
     "int": "pm2-docker start ecosystem.config.js --only ***REMOVED***-int",
     "prod": "pm2-docker start ecosystem.config.js --only ***REMOVED***-prod",
-    "build": "npm run clean && babel index.js --copy-files -d dist",
+    "build": "npm run clean && babel server --copy-files -d dist",
     "clean": "rimraf public/*",
     "migrate": "sequelize --config config/DatabaseConfig.json db:migrate",
     "test": "NODE_ENV=test mocha \"tests/*.test.js\" --exit",

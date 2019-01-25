@@ -21,7 +21,6 @@ export function list(_req, res, next) {
 
 export function subscriptions(_req, res, next) {
   const { uid = null, p = 1 } = res.locals
-  console.log(uid)
   User
     .findByPk(uid)
     .then(user => {

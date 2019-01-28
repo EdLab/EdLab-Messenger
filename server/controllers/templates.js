@@ -47,7 +47,7 @@ export function update(_req, res, next) {
 }
 
 export function create(_req, res, next) {
-  templateData = {}
+  const templateData = {}
   TEMPLATE_FIELDS.forEach(field => {
     if (res.locals[field]) {
       templateData[field] = res.locals[field]

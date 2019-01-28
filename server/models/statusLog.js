@@ -23,6 +23,7 @@ export default function (sequelize, DataTypes) {
     StatusLog.associate = (models) => {
       StatusLog.belongsTo(models.message, {
         onDelete: 'CASCADE',
+        foreignKey: { allowNull: false },
       })
     }
 

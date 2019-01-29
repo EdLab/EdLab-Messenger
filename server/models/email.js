@@ -94,7 +94,7 @@ export default function (sequelize, DataTypes) {
                 return send(noSuccess + noFailed)
               })
           }
-          send()
+          return send()
         })
         .catch(error => Logger.error(error))
     }

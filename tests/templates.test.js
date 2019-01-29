@@ -3,7 +3,7 @@ import chai from 'chai'
 import app from '../server/app'
 
 describe('Template APIs', function () {
-  let template1, template2, template3
+  let template1
 
   const expect = chai.expect
   chai.should()

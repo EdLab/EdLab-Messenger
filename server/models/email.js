@@ -63,7 +63,7 @@ export default function (sequelize, DataTypes) {
     Email.sendScheduledEmails = () => {
       const end = moment()
       const start = moment(end).subtract(10, 'minutes')
-      Email
+      return Email
         .findAll({
           where: {
             scheduled_at: {

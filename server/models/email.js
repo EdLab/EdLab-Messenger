@@ -82,7 +82,7 @@ export default function (sequelize, DataTypes) {
                 Logger.debug(`Sent ${ len } emails: ${ noSuccess } successes, ${ noFailed } failures`)
                 return resolve()
               }
-              `Email (id: ${ emails[noSuccess + noFailed].id }) sending starting at ${ moment() }`;
+              Logger.debug(`Email (id: ${ emails[noSuccess + noFailed].id }) sending starting at ${ moment() }`)
               return emails[noSuccess + noFailed]
                 .send()
                 .then(() => {

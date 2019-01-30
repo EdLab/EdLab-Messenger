@@ -110,10 +110,13 @@ export default function (sequelize, DataTypes) {
           return reject(`Email with id: ${ this.id } completed at ${ this.completed_at }`)
         }
         let to_users, cc_emails, bcc_emails, from_email_address
-        let sleepTime, startTime, sendRate
+        let sleepTime, startTime, sendRate, timeDiff
         let noSuccess = 0
         let noFailed = 0
         const sendMessages = () => {
+          if ((noSuccess + noFailed) % 100) {
+            Logger.debug(`Success: ${ noSuccess }, Failure: ${ noFailed } / ${ to_users.length } messages in ${ timeDiff } seconds`)
+          }
           if (noSuccess + noFailed === to_users.length) {
             const completed_at = moment()
             this.update({ completed_at: completed_at })
@@ -130,9 +133,9 @@ export default function (sequelize, DataTypes) {
             .then(() => {
               noSuccess++
               const noSent = noSuccess + noFailed
-              const timeDiff = moment().diff(startTime, 'seconds')
+              timeDiff = moment().diff(startTime, 'seconds')
               if ((noSent) / timeDiff >= sendRate) {
-                Logger.debug(`Creating timeout; sent: ${noSent}; time: ${ timeDiff } sec; rate: ${ sendRate }`)
+                // Logger.debug(`Creating timeout; sent: ${noSent}; time: ${ timeDiff } sec; rate: ${ sendRate }`)
                 return new Promise(() => {
                   setTimeout(() => {
                     return sendMessages()
@@ -141,12 +144,12 @@ export default function (sequelize, DataTypes) {
               } else { return sendMessages() }
             })
             .catch(error => {
-              Logger.debug(`Message sending failed: ${ error }`)
+              // Logger.debug(`Message sending failed: ${ error }`)
               noFailed++
               const noSent = noSuccess + noFailed
-              const timeDiff = moment().diff(startTime, 'seconds')
+              timeDiff = moment().diff(startTime, 'seconds')
               if ((noSent) / timeDiff >= sendRate) {
-                Logger.debug(`Creating timeout; sent: ${noSent}; time: ${ timeDiff } sec; rate: ${ sendRate }`)
+                // Logger.debug(`Creating timeout; sent: ${noSent}; time: ${ timeDiff } sec; rate: ${ sendRate }`)
                 return new Promise(() => {
                   setTimeout(() => {
                     return sendMessages()

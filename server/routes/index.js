@@ -106,6 +106,19 @@ router.use('/from_emails',
       getParam('p', { parser: 'integer' }),
       getController('fromEmails').list
     )
+    emailIdRouter.post(
+      '/',
+      getParam('sender', { parser: 'string' }),
+      getParam('email', { parser: 'string' }),
+      getController('fromEmails').create
+    )
+    emailIdRouter.put(
+      '/:id',
+      getParam('id', { parser: 'integer' }),
+      getParam('sender', { parser: 'string' }),
+      getParam('email', { parser: 'string' }),
+      getController('fromEmails').create
+    )
     emailIdRouter.delete(
       '/:id',
       getParam('id', { parser: 'integer' }),

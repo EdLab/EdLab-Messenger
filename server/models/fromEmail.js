@@ -3,12 +3,10 @@ export default function (sequelize, DataTypes) {
     sender: {
       type: DataTypes.STRING(64),
       allowNull: false,
-      unique: true,
     },
     email: {
       type: DataTypes.STRING(64),
       allowNull: false,
-      unique: true,
     },
   }, {
     underscored: true,

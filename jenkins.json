@@ -1,4 +1,4 @@
 {
-    "version": "1.0.9",
+    "version": "1.0.10",
     "unit_tests": "echo 'unit tests command'"
 }

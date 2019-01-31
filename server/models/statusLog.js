@@ -70,6 +70,7 @@ export default function (sequelize, DataTypes) {
                       })
                     }
                   })
+                  .catch(error => Logger.error(error))
               )
             })
             return Promise.all(promises)

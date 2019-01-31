@@ -114,7 +114,7 @@ export default function (sequelize, DataTypes) {
         let noSuccess = 0
         let noFailed = 0
         const sendMessages = () => {
-          if ((noSuccess + noFailed) % 100) {
+          if ((noSuccess + noFailed) % 100 === 0) {
             Logger.debug(`Success: ${ noSuccess }, Failure: ${ noFailed } / ${ to_users.length } messages in ${ timeDiff } seconds`)
           }
           if (noSuccess + noFailed === to_users.length) {

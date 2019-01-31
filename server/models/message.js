@@ -52,11 +52,11 @@ export default function (sequelize, DataTypes) {
       .promise()
       .then(data => {
         const status_at = moment()
-        Logger.debug(
-          `Sent message successfully;
-           ses_id: ${ data.MessageId };
-           sending completed at ${ status_at }`
-        )
+        // Logger.debug(
+        //   `Sent message successfully;
+        //    ses_id: ${ data.MessageId };
+        //    sending completed at ${ status_at }`
+        // )
         Message
           .create({
             email_id: email.id,

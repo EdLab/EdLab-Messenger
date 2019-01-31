@@ -74,7 +74,7 @@ export default function (sequelize, DataTypes) {
           .catch(error => {
             Logger.error(`Saving sent message failed: ${ error }`)
           })
-        Promise.resolve()
+        return Promise.resolve()
       })
   }
 

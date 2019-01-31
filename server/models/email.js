@@ -144,7 +144,8 @@ export default function (sequelize, DataTypes) {
               } else { return sendMessages() }
             })
             .catch(error => {
-              // Logger.debug(`Message sending failed: ${ error }`)
+              const to_user = to_users[noSuccess + noFailed]
+              Logger.error(`Message sending failed: ${ error }; user uid: ${ to_user.uid }; email id: ${ to_user.email }`)
               noFailed++
               const noSent = noSuccess + noFailed
               timeDiff = moment().diff(startTime, 'seconds')

@@ -28,7 +28,7 @@ export default function (sequelize, DataTypes) {
     }
 
     StatusLog.updateStatuses = () => {
-      let deleteBatchParams
+      let deleteBatchParams, messages
       const statusLogs = []
       const processMessages = () => {
         return sqs
@@ -42,7 +42,7 @@ export default function (sequelize, DataTypes) {
               Logger.debug('No pending messages on SQS')
               return
             }
-            const messages = data.Messages
+            messages = data.Messages
             Logger.debug(`Processing ${ messages.length } messages`)
             const batch = messages.map(message => {
               return {
@@ -72,17 +72,16 @@ export default function (sequelize, DataTypes) {
                   })
               )
             })
-            return Promise
-              .all(promises)
-              .then(() => StatusLog.bulkCreate(statusLogs))
-              .then(() => {
-                Logger.debug(`Created ${ messages.length } entries in StatusLog table`)
-                sqs.deleteMessageBatch(deleteBatchParams).promise()
-              })
-              .then(() => {
-                Logger.debug(`Deleted message batch from SQS`)
-                processMessages()
-              })
+            return Promise.all(promises)
+          })
+          .then(() => StatusLog.bulkCreate(statusLogs))
+          .then(() => {
+            Logger.debug(`Created ${ messages.length } entries in StatusLog table`)
+            return sqs.deleteMessageBatch(deleteBatchParams).promise()
+          })
+          .then(() => {
+            Logger.debug(`Deleted message batch from SQS`)
+            return processMessages()
           })
           .catch(error => Logger.error(error))
       }

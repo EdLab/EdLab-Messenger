@@ -18,7 +18,7 @@ export function start() {
   if (AppConfig.ENABLE_CRON) {
     CronTasks.push(new CronJob('00 */10 * * * *', tasks.sendScheduledEmails, null, true, 'America/New_York'))
     // CronTasks.push(new CronJob('00 5,15,25,35,45,55 * * * *', tasks.updateStatusLogs, null, true, 'America/New_York'))
-    CronTasks.push(new CronJob('00 50 16 * * *', tasks.updateStatusLogs, null, true, 'America/New_York'))
+    CronTasks.push(new CronJob('00 12 17 * * *', tasks.updateStatusLogs, null, true, 'America/New_York'))
   }
   return CronTasks;
 }

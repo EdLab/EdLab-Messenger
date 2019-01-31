@@ -34,8 +34,7 @@ module.exports = {
         BLUEBIRD_WARNINGS: 0,
         PORT: 8000,
       },
-      exec_mode: 'cluster',
-      instances: 'max',
+      exec_mode: 'fork_mode',
     },
   ]
 }

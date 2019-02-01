@@ -72,7 +72,7 @@ export default function (sequelize, DataTypes) {
                 logs.forEach(log => {
                   const sesId = log['mail']['messageId']
                   const event = log['eventType']
-                  const body = log[event].toLowerCase()
+                  const body = log[event.toLowerCase()]
                   if (orderedSesIds.indexOf(sesId) >= 0) {
                     const messageId = orderedIds[orderedSesIds.indexOf(sesId)]
                     statusLogs.push({

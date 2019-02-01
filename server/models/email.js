@@ -61,17 +61,14 @@ export default function (sequelize, DataTypes) {
     }
 
     Email.sendScheduledEmails = () => {
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve, _reject) => {
         const end = moment()
-        const start = moment(end).subtract(10, 'minutes')
         return Email
           .findAll({
             where: {
-              scheduled_at: {
-                [Op.gt]: start,
-                [Op.lte]: end,
-              }
-            }
+              scheduled_at: { [Op.lte]: end },
+              completed_at: null,
+            },
           })
           .then(emails => {
             const len = emails.length
@@ -97,10 +94,7 @@ export default function (sequelize, DataTypes) {
             }
             return send()
           })
-          .catch(error => {
-            Logger.error(error)
-            return reject(error)
-          })
+          .catch(error => Logger.error(error))
       })
     }
 

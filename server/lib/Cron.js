@@ -1,16 +1,45 @@
 import { CronJob } from 'cron';
 import moment from 'moment'
-const debug = require('debug')('App:CRON')
 const CronTasks = []
 
 const tasks = {
   sendScheduledEmails() {
-    debug(`sendScheduledEmails called at ${ moment() }`)
-    return Email.sendScheduledEmails()
+    Logger.debug(`sendScheduledEmails called at ${ moment() }`)
+    return Process
+      .findOne({
+        where: {
+          name: 'sendScheduledEmails',
+        },
+      })
+      .then(process => {
+        if (!process || !process.is_running) {
+          return process
+            .update({ is_running: true })
+            .then(() => Email.sendScheduledEmails())
+            .finally(() => process.update({ is_running: false }))
+        }
+        Logger.debug('sendScheduledEmails process skipped as it is already running')
+      })
+      .catch(error => Logger.error(error))
   },
   updateStatusLogs() {
-    debug(`updateStatusLogs called at ${ moment() }`)
-    return StatusLog.updateStatuses()
+    Logger.debug(`updateStatusLogs called at ${ moment() }`)
+    return Process
+      .findOne({
+        where: {
+          name: 'updateStatusLogs',
+        },
+      })
+      .then(process => {
+        if (!process || !process.is_running) {
+          return process
+            .update({ is_running: true })
+            .then(() => StatusLog.updateStatuses())
+            .finally(() => process.update({ is_running: false }))
+        }
+        Logger.debug('updateStatusLogs process skipped as it is already running')
+      })
+      .catch(error => Logger.error(error))
   },
 }
 

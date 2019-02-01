@@ -30,8 +30,8 @@ export default function (sequelize, DataTypes) {
 
     StatusLog.updateStatuses = () => {
       let deleteBatchParams, statusMessages, logs
-      const statusLogs = []
       const processMessages = () => {
+        const statusLogs = []
         return sqs
           .receiveMessage({
             QueueUrl: AppConfig.SQS_QUEUE_URL,
@@ -69,8 +69,6 @@ export default function (sequelize, DataTypes) {
               .then(messages => {
                 const orderedSesIds = messages.map(message => message.ses_id)
                 const orderedIds = messages.map(message => message.id)
-                console.log(orderedSesIds)
-                console.log(orderedIds)
                 logs.forEach(log => {
                   const sesId = log['mail']['messageId']
                   if (orderedSesIds.indexOf(sesId) >= 0) {

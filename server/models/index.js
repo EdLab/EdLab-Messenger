@@ -3,6 +3,7 @@ const globalModels = {
   Email: SequelizeInst.import('./email'),
   FromEmail: SequelizeInst.import('./fromEmail'),
   Message: SequelizeInst.import('./message'),
+  Process: SequelizeInst.import('./process'),
   StatusLog: SequelizeInst.import('./statusLog'),
   Subscription: SequelizeInst.import('./subscription'),
   SubscriptionList: SequelizeInst.import('./subscriptionList'),

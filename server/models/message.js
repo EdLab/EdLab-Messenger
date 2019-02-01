@@ -51,25 +51,11 @@ export default function (sequelize, DataTypes) {
       })
       .promise()
       .then(data => {
-        const status_at = moment()
-        // Logger.debug(
-        //   `Sent message successfully;
-        //    ses_id: ${ data.MessageId };
-        //    sending completed at ${ status_at }`
-        // )
         Message
           .create({
             email_id: email.id,
             to_user_uid: to_user.uid,
             ses_id: data.MessageId,
-          })
-          .then(message => {
-            StatusLog
-              .create({
-                message_id: message.id,
-                status: 'Sent',
-                status_at: status_at,
-              })
           })
           .catch(error => {
             Logger.error(`Saving sent message failed: ${ error }`)

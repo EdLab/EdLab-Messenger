@@ -129,7 +129,6 @@ export default function (sequelize, DataTypes) {
               const noSent = noSuccess + noFailed
               timeDiff = moment().diff(startTime, 'seconds')
               if ((noSent) / timeDiff >= sendRate) {
-                // Logger.debug(`Creating timeout; sent: ${noSent}; time: ${ timeDiff } sec; rate: ${ sendRate }`)
                 return new Promise(() => {
                   setTimeout(() => {
                     return sendMessages()
@@ -144,7 +143,6 @@ export default function (sequelize, DataTypes) {
               const noSent = noSuccess + noFailed
               timeDiff = moment().diff(startTime, 'seconds')
               if ((noSent) / timeDiff >= sendRate) {
-                // Logger.debug(`Creating timeout; sent: ${noSent}; time: ${ timeDiff } sec; rate: ${ sendRate }`)
                 return new Promise(() => {
                   setTimeout(() => {
                     return sendMessages()

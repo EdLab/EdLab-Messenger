@@ -71,13 +71,15 @@ export default function (sequelize, DataTypes) {
                 const orderedIds = messages.map(message => message.id)
                 logs.forEach(log => {
                   const sesId = log['mail']['messageId']
+                  const event = log['eventType']
+                  const body = log[event].toLowerCase()
                   if (orderedSesIds.indexOf(sesId) >= 0) {
                     const messageId = orderedIds[orderedSesIds.indexOf(sesId)]
                     statusLogs.push({
-                      status: log['eventType'],
+                      status: event,
                       message_id: messageId,
-                      status_at: log['mail']['timestamp'],
-                      comment: JSON.stringify(log['mail'])
+                      status_at: ['timestamp'],
+                      comment: JSON.stringify(body)
                     })
                   }
                 })

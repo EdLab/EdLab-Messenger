@@ -67,7 +67,7 @@ export default function (sequelize, DataTypes) {
             StatusLog
               .create({
                 message_id: message.id,
-                status: 'sent',
+                status: 'Sent',
                 status_at: status_at,
               })
           })

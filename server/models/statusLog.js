@@ -1,5 +1,6 @@
 import AWS from '../lib/AWS.js'
 const sqs = new AWS.SQS()
+const Op = SequelizeInst.Op
 
 export default function (sequelize, DataTypes) {
     const StatusLog = sequelize.define('status_log', {
@@ -28,7 +29,7 @@ export default function (sequelize, DataTypes) {
     }
 
     StatusLog.updateStatuses = () => {
-      let deleteBatchParams, messages
+      let deleteBatchParams, statusMessages, logs
       const statusLogs = []
       const processMessages = () => {
         return sqs
@@ -40,49 +41,58 @@ export default function (sequelize, DataTypes) {
           .then(data => {
             if (!data || !data.Messages) {
               Logger.debug('No pending messages on SQS')
-              return
+              return Promise.resolve()
             }
-            messages = data.Messages
-            Logger.debug(`Processing ${ messages.length } messages`)
-            const batch = messages.map(message => {
+            statusMessages = data.Messages
+            Logger.debug(`Processing ${ statusMessages.length } messages`)
+            const batch = statusMessages.map(statusMessage => {
               return {
-                Id: message.MessageId,
-                ReceiptHandle: message.ReceiptHandle,
+                Id: statusMessage.MessageId,
+                ReceiptHandle: statusMessage.ReceiptHandle,
               }
             })
             deleteBatchParams = {
               Entries: batch,
               QueueUrl: AppConfig.SQS_QUEUE_URL,
             }
-            const logs = messages.map(message => JSON.parse(message.Body))
-            const promises = []
-            logs.forEach(log => {
-              promises.push(
-                Message
-                  .findOne({ where: { ses_id: log['mail']['messageId'] } })
-                  .then(message => {
-                    if (message) {
-                      statusLogs.push({
-                        status: log['eventType'],
-                        message_id: message.id,
-                        status_at: log['mail']['timestamp'],
-                        comment: JSON.stringify(log['mail'])
-                      })
-                    }
-                  })
-                  .catch(error => Logger.error(error))
-              )
-            })
-            return Promise.all(promises)
-          })
-          .then(() => StatusLog.bulkCreate(statusLogs))
-          .then(() => {
-            Logger.debug(`Created ${ messages.length } entries in StatusLog table`)
-            return sqs.deleteMessageBatch(deleteBatchParams).promise()
-          })
-          .then(() => {
-            Logger.debug(`Deleted message batch from SQS`)
-            return processMessages()
+            logs = statusMessages.map(message => JSON.parse(message.Body))
+            const messageIds = logs.map(log => log['mail']['messageId'])
+            return Message
+              .findAll({
+                where: {
+                  ses_id: {
+                    [Op.in]: messageIds,
+                  },
+                },
+                raw: true,
+              })
+              .then(messages => {
+                const orderedSesIds = messages.map(message => message.ses_id)
+                const orderedIds = messages.map(message => message.id)
+                console.log(orderedSesIds)
+                console.log(orderedIds)
+                logs.forEach(log => {
+                  const sesId = log['mail']['messageId']
+                  if (orderedSesIds.indexOf(sesId) >= 0) {
+                    const messageId = orderedIds[orderedSesIds.indexOf(sesId)]
+                    statusLogs.push({
+                      status: log['eventType'],
+                      message_id: messageId,
+                      status_at: log['mail']['timestamp'],
+                      comment: JSON.stringify(log['mail'])
+                    })
+                  }
+                })
+                return StatusLog.bulkCreate(statusLogs)
+              })
+              .then(() => {
+                Logger.debug(`Created ${ statusLogs.length } entries in StatusLog table`)
+                return sqs.deleteMessageBatch(deleteBatchParams).promise()
+              })
+              .then(() => {
+                Logger.debug(`Deleted message batch from SQS`)
+                return processMessages()
+              })
           })
           .catch(error => Logger.error(error))
       }

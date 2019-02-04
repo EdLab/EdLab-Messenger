@@ -19,16 +19,16 @@ const NO_MESSAGES_QUERY = '(SELECT COUNT(`id`) FROM `messages` WHERE `email_id` 
  *      "results": [
  *        {
  *          "id": 1,
-            "subject": "New from the Teachers College Archives",
-            "html": "<h2>Email template here with a user specific variable like ${ firstname } of ${ lastname }</h2>"
-            "to_user_uids": null,
-            "cc_user_uids": null,
-            "bcc_user_uids": null,
-            "scheduled_at": "2019-01-30T16:28:00.000Z",
-            "from_email_id": 2,
-            "subscription_list_id": 1,
-            "completed_at": "2019-01-30T16:30:03.000Z",
-            "no_messages": 7
+ *          "subject": "New from the Teachers College Archives",
+ *          "html": "<h2>Email template here with a user specific variable like ${ firstname } of ${ lastname }</h2>"
+ *          "to_user_uids": null,
+ *          "cc_user_uids": null,
+ *          "bcc_user_uids": null,
+ *          "scheduled_at": "2019-01-30T16:28:00.000Z",
+ *          "from_email_id": 2,
+ *          "subscription_list_id": 1,
+ *          "completed_at": "2019-01-30T16:30:03.000Z",
+ *          "no_messages": 7
  *        },
  *      ]
  *    }
@@ -63,19 +63,19 @@ export function list(_req, res, next) {
  * @apiSuccess {Object} Response Email object.
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
- *    {
- *      "id": 1,
-        "subject": "New from the Teachers College Archives",
-        "html": "<h2>Email template here with a user specific variable like ${ firstname } of ${ lastname }</h2>"
-        "to_user_uids": null,
-        "cc_user_uids": null,
-        "bcc_user_uids": null,
-        "scheduled_at": "2019-01-30T16:28:00.000Z",
-        "from_email_id": 2,
-        "subscription_list_id": 1,
-        "completed_at": "2019-01-30T16:30:03.000Z",
-        "no_messages": 7
- *    }
+ *      {
+ *        "id": 1,
+ *        "subject": "New from the Teachers College Archives",
+ *        "html": "<h2>Email template here with a user specific variable like ${ firstname } of ${ lastname }</h2>"
+ *        "to_user_uids": null,
+ *        "cc_user_uids": null,
+ *        "bcc_user_uids": null,
+ *        "scheduled_at": "2019-01-30T16:28:00.000Z",
+ *        "from_email_id": 2,
+ *        "subscription_list_id": 1,
+ *        "completed_at": "2019-01-30T16:30:03.000Z",
+ *        "no_messages": 7
+ *      }
  */
 export function retrieve(_req, res, next) {
   const { id = null } = res.locals
@@ -111,16 +111,16 @@ export function retrieve(_req, res, next) {
  *      "results": [
  *        {
  *          "id": 1,
-            "subject": "New from the Teachers College Archives",
-            "html": "<h2>Email template here with a user specific variable like ${ firstname } of ${ lastname }</h2>"
-            "to_user_uids": null,
-            "cc_user_uids": null,
-            "bcc_user_uids": null,
-            "scheduled_at": "2019-01-30T16:28:00.000Z",
-            "from_email_id": 2,
-            "subscription_list_id": 1,
-            "completed_at": "2019-01-30T16:30:03.000Z",
-            "no_messages": 7
+ *          "subject": "New from the Teachers College Archives",
+ *          "html": "<h2>Email template here with a user specific variable like ${ firstname } of ${ lastname }</h2>"
+ *          "to_user_uids": null,
+ *          "cc_user_uids": null,
+ *          "bcc_user_uids": null,
+ *          "scheduled_at": "2019-01-30T16:28:00.000Z",
+ *          "from_email_id": 2,
+ *          "subscription_list_id": 1,
+ *          "completed_at": "2019-01-30T16:30:03.000Z",
+ *          "no_messages": 7
  *        },
  *      ]
  *    }
@@ -168,20 +168,20 @@ export function messages(_req, res, next) {
  *
  * @apiSuccess {Object} Response Email object.
  * @apiSuccessExample {json} Success-Response:
- *     HTTP/1.1 201 OK
- *    {
- *      "id": 1,
-        "subject": "New from the Teachers College Archives",
-        "html": "<h2>Email template here with a user specific variable like ${ firstname } of ${ lastname }</h2>"
-        "to_user_uids": null,
-        "cc_user_uids": null,
-        "bcc_user_uids": null,
-        "scheduled_at": "2019-01-30T16:28:00.000Z",
-        "from_email_id": 2,
-        "subscription_list_id": 1,
-        "completed_at": "2019-01-30T16:30:03.000Z",
-        "no_messages": 7
- *    }
+ *     HTTP/1.1 201 Created
+ *      {
+ *        "id": 1,
+ *        "subject": "New from the Teachers College Archives",
+ *        "html": "<h2>Email template here with a user specific variable like ${ firstname } of ${ lastname }</h2>"
+ *        "to_user_uids": null,
+ *        "cc_user_uids": null,
+ *        "bcc_user_uids": null,
+ *        "scheduled_at": "2019-01-30T16:28:00.000Z",
+ *        "from_email_id": 2,
+ *        "subscription_list_id": 1,
+ *        "completed_at": "2019-01-30T16:30:03.000Z",
+ *        "no_messages": 7
+ *      }
  */
 export function update(_req, res, next) {
   const { id = null } = res.locals
@@ -223,7 +223,7 @@ export function update(_req, res, next) {
 }
 
 /**
- * @api {POST} /emails/:id Create Email
+ * @api {POST} /emails Create Email
  * @apiName createEmail
  * @apiGroup Emails
  *
@@ -238,20 +238,20 @@ export function update(_req, res, next) {
  *
  * @apiSuccess {Object} Response Email object.
  * @apiSuccessExample {json} Success-Response:
- *     HTTP/1.1 201 OK
- *    {
- *      "id": 1,
-        "subject": "New from the Teachers College Archives",
-        "html": "<h2>Email template here with a user specific variable like ${ firstname } of ${ lastname }</h2>"
-        "to_user_uids": null,
-        "cc_user_uids": null,
-        "bcc_user_uids": null,
-        "scheduled_at": "2019-01-30T16:28:00.000Z",
-        "from_email_id": 2,
-        "subscription_list_id": 1,
-        "completed_at": "2019-01-30T16:30:03.000Z",
-        "no_messages": 7
- *    }
+ *     HTTP/1.1 201 Created
+ *      {
+ *        "id": 1,
+ *        "subject": "New from the Teachers College Archives",
+ *        "html": "<h2>Email template here with a user specific variable like ${ firstname } of ${ lastname }</h2>"
+ *        "to_user_uids": null,
+ *        "cc_user_uids": null,
+ *        "bcc_user_uids": null,
+ *        "scheduled_at": "2019-01-30T16:28:00.000Z",
+ *        "from_email_id": 2,
+ *        "subscription_list_id": 1,
+ *        "completed_at": "2019-01-30T16:30:03.000Z",
+ *        "no_messages": 7
+ *      }
  */
 export function create(_req, res, next) {
   const { scheduled_at = null, subscription_list_id = null, to_user_uids = null } = res.locals
@@ -283,9 +283,9 @@ export function create(_req, res, next) {
  *
  * @apiParam {Number} id Mandatory The id of Email that you want to delete
  *
- * @apiSuccess {Object} Response Email object.
+ * @apiSuccess {Object} Response empty object.
  * @apiSuccessExample {json} Success-Response:
- *     HTTP/1.1 204 OK
+ *     HTTP/1.1 204 No Content
  *    {}
  */
 export function destroy(_req, res, next) {

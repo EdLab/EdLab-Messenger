@@ -1,6 +1,6 @@
 {
   "name": "***REMOVED***",
-  "version": "1.0.16",
+  "version": "1.0.17",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -13,7 +13,7 @@
     "build": "npm run clean && babel server --copy-files -d dist",
     "clean": "rimraf public/*",
     "migrate": "sequelize --config config/DatabaseConfig.json db:migrate",
-    "doc": "apidoc -v -i server/controllers -i server/middlewares -o docs/",
+    "doc": "apidoc -v -i server/controllers -o docs/",
     "test": "NODE_ENV=test mocha \"tests/**/*.test.js\" --require babel-polyfill --require @babel/register --exit",
     "test:report": "NODE_ENV=test mocha \"tests/**/*.test.js\" --require babel-polyfill --require @babel/register --reporter mochawesome --reporter-options reportDir=test/report,autoOpen  --exit",
     "test:coverage": "NODE_ENV=test nyc mocha \"tests/**/*.test.js\" --require babel-polyfill --require @babel/register --exit && nyc report --reporter=html && open coverage/index.html"

@@ -152,7 +152,7 @@ export function addSubscription(_req, res, next) {
       where: {
         user_uid: user_uid,
         subscription_list_id: id,
-      }
+      },
     })
     .spread((subscription, _created) => {
       // if (!created) {
@@ -183,7 +183,7 @@ export function removeSubscription(_req, res, next) {
       where: {
         user_uid: user_uid,
         subscription_list_id: id,
-      }
+      },
     })
     .then(response => res.status(204).json(response))
     .catch(e => next(e))

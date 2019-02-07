@@ -10,7 +10,7 @@ const configs = {
     SQS_QUEUE_URL: '***REMOVED***/***REMOVED***',
     PAGINATION_LIMIT: 12,
     ENABLE_CRON: false,
-    ACCOUNTS_DB: 'accounts'
+    ACCOUNTS_DB: 'accounts',
   },
   development: {
     ENABLE_DOC: true,

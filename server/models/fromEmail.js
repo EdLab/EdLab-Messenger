@@ -46,7 +46,7 @@ export default function (sequelize, DataTypes) {
 
   FromEmail.associate = (models) => {
     FromEmail.hasMany(models.email, {
-      onDelete: 'RESTRICT'
+      onDelete: 'RESTRICT',
     })
   }
 

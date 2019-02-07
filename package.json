@@ -26,6 +26,8 @@
     "chalk": "^2.4.2",
     "cli-highlight": "^2.0.0",
     "cors": "^2.8.5",
+    "cron": "^1.6.0",
+    "debug": "^4.1.1",
     "dotenv": "^6.2.0",
     "express": "^4.16.4",
     "express-get-param": "^1.1.1",

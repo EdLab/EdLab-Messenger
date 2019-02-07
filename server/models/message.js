@@ -44,7 +44,7 @@ export default function (sequelize, DataTypes) {
           Body: {
             Html: { Data: html },
             Text: { Data: createTextVersion(html) },
-          }
+          },
         },
         Source: from_email_address,
         ConfigurationSetName: AppConfig.SES_CONFIGURATION_SET,

@@ -1,3 +1,3 @@
 export function getController(name, path = '../controllers') {
-    return require(`${path}/${name}`);
+  return require(`${path}/${name}`)
 }

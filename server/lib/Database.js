@@ -1,6 +1,6 @@
-import Sequelize from 'sequelize';
-import { highlight } from 'cli-highlight';
-import { green, gray, yellow, magenta } from 'chalk';
+import Sequelize from 'sequelize'
+import { highlight } from 'cli-highlight'
+import { green, gray, yellow, magenta } from 'chalk'
 const debug = require('debug')('DB:SequelizeInst')
 
 export default function (DBConfig) {

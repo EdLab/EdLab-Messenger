@@ -1,5 +1,5 @@
-import moment from 'moment';
-import { format as _format, createLogger, transports as _transports } from 'winston';
+import moment from 'moment'
+import { format as _format, createLogger, transports as _transports } from 'winston'
 const { combine, timestamp, printf, colorize } = _format
 
 function logger() {

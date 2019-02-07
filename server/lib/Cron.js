@@ -1,4 +1,4 @@
-import { CronJob } from 'cron';
+import { CronJob } from 'cron'
 import moment from 'moment'
 const CronTasks = []
 
@@ -48,8 +48,8 @@ export function start() {
     CronTasks.push(new CronJob('00 */10 * * * *', tasks.sendScheduledEmails, null, true, 'America/New_York'))
     CronTasks.push(new CronJob('00 5,15,25,35,45,55 * * * *', tasks.updateStatusLogs, null, true, 'America/New_York'))
   }
-  return CronTasks;
+  return CronTasks
 }
 export function getTasks() {
-  return CronTasks;
+  return CronTasks
 }

@@ -81,8 +81,8 @@ export function subscriptions(_req, res, next) {
             {
               model: SubscriptionList,
               attributes: SUBSCRIPTION_LIST_FIELDS,
-            }
-          ]
+            },
+          ],
         })
     })
     .then(result => {

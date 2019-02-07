@@ -1,4 +1,4 @@
-import AWS, { config } from 'aws-sdk';
+import AWS, { config } from 'aws-sdk'
 
 config.update({ 'region': AppConfig.AWS_CONFIG.AWS_REGION })
 

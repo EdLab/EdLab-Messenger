@@ -112,9 +112,9 @@ export function create(_req, res, next) {
  */
 export function destroy(_req, res, next) {
   const { id = null } = res.locals
-  EmailId
+  FromEmail
     .findByPk(id)
-    .then(emailId => emailId.destroy())
+    .then(fromEmail => fromEmail.destroy())
     .then(() => res.status(204).send({}))
     .catch(e => next(e))
 }

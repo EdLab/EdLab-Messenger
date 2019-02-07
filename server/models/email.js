@@ -61,7 +61,7 @@ export default function (sequelize, DataTypes) {
   }
 
   Email.sendScheduledEmails = () => {
-    return new Promise((resolve, _reject) => {
+    return new Promise((resolve) => {
       const end = moment()
       return Email
         .findAll({

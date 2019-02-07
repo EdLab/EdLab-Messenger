@@ -7,7 +7,19 @@
     "globals": {
         "AppConfig": true,
         "Logger": true,
-        "Utility": true
+        "Utility": true,
+        "Response": true,
+        "SequelizeInst": true,
+        "AccountsSequelizeInst": true,
+        "Email": true,
+        "FromEmail": true,
+        "Message": true,
+        "Process": true,
+        "StatusLog": true,
+        "Subscription": true,
+        "SubscriptionList": true,
+        "Template": true,
+        "User": true
     },
     "extends": [
         "eslint:recommended"

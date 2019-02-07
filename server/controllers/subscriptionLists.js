@@ -154,7 +154,7 @@ export function addSubscription(_req, res, next) {
         subscription_list_id: id,
       },
     })
-    .spread((subscription, _created) => {
+    .spread((subscription/*, created */) => {
       // if (!created) {
       //   return next(Response.Invalid('Subscription already exists'))
       // }

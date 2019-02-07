@@ -1,6 +1,5 @@
 import format from 'string-template'
 import createTextVersion from 'textversionjs'
-import moment from 'moment'
 import AWS from '../lib/AWS.js'
 
 const ses = new AWS.SES()

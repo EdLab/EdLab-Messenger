@@ -1,7 +1,6 @@
 const configs = {
   default: {
     HTTP_BODY_LIMIT: '50mb',
-    ENABLE_SENTRY_IO: false,
     DISPLAY_ERROR_STACKTREE: true,
     LOG_LEVEL: 'debug',
   },
@@ -16,8 +15,6 @@ const configs = {
     HOST_URL: 'https://***REMOVED***2.tc-***REMOVED***.org/',
   },
   production: {
-    DISPLAY_ERROR_STACKTREE: false,
-    ENABLE_SENTRY_IO: true,
     HOST_URL: 'https://***REMOVED***2.tc-***REMOVED***.org/',
   },
 }

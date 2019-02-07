@@ -6,7 +6,6 @@ import express from 'express'
 import { json } from 'body-parser'
 
 const env = process.env.NODE_ENV || 'development'
-import { init, Handlers } from '@sentry/node'
 
 import publicConfig from './config/app_config'
 import privateConfig from './config/app_config_private'
@@ -46,16 +45,7 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Origin'],
 }))
-if (AppConfig.ENABLE_SENTRY_IO) {
-  // TODO: Check settings for this
-  init({
-    dsn: 'https://f055399a01934eeabe6cdd070bff7385@sentry.io/1304217',
-    release: version,
-    environment: env,
-    attachStacktrace: true,
-  })
-  app.use(Handlers.requestHandler())
-}
+
 if (AppConfig.isProduction) {
   app.use(morgan('combined'))
 } else if (!AppConfig.isTesting) {
@@ -79,7 +69,6 @@ if (AppConfig.ENABLE_DOC) {
 app.use(json({ limit: AppConfig.HTTP_BODY_LIMIT }))
 app.use(require('./routes').default)
 
-if (AppConfig.ENABLE_SENTRY_IO) { app.use(Handlers.errorHandler()) }
 app.use(() => {
   const error = new Error('Resource Not Found')
   error.status = 404

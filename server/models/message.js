@@ -1,4 +1,4 @@
-var format = require("string-template")
+import format from 'string-template'
 import createTextVersion from 'textversionjs'
 import moment from 'moment'
 import AWS from '../lib/AWS.js'

@@ -80,12 +80,12 @@ describe('Template APIs', function () {
         name: newName,
       })
       .expect(201)
-      .end((err, res) => {
+      .end((err) => {
         expect(err).to.be.null
         request(app)
           .get(`/templates/${ template1.id }`)
           .expect(200)
-          .end((err, _res) => {
+          .end((err, res) => {
             expect(err).to.be.null
             expect(res.body).to.be.a('object')
             res.body.should.has.property('id')
@@ -104,12 +104,12 @@ describe('Template APIs', function () {
     request(app)
       .delete(`/templates/${ template1.id }`)
       .expect(204)
-      .end((err, _res) => {
+      .end((err) => {
         expect(err).to.be.null
         request(app)
           .get(`/templates/${ template1.id }`)
           .expect(404)
-          .end((err, _res) => {
+          .end((err) => {
             expect(err).to.not.be.null
             done()
           })

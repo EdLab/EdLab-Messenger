@@ -176,8 +176,10 @@ export default function (sequelize, DataTypes) {
         })
         .then(email => {
           from_email_address = email.from_email.getEmailAddress()
-          let to_user_uids = email.to_user_uids
-          if (!to_user_uids) {
+          let to_user_uids
+          if (email.to_user_uids) {
+            to_user_uids = email.to_user_uids.split(',')
+          } else {
             const subscriptions = email.subscription_list.subscriptions
             to_user_uids = subscriptions.map(s => s.user_uid)
           }

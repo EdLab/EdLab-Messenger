@@ -86,14 +86,14 @@ export function update(_req, res, next) {
  *      }
  */
 export function create(_req, res, next) {
-  const emailIdData = {}
+  const fromEmailData = {}
   FROM_EMAIL_FIELDS.forEach(field => {
     if (res.locals[field]) {
-      emailIdData[field] = res.locals[field]
+      fromEmailData[field] = res.locals[field]
     }
   })
   FromEmail
-    .create(emailIdData)
+    .create(fromEmailData)
     .then(fromEmail => res.status(201).send(fromEmail))
     .catch(e => next(e))
 }

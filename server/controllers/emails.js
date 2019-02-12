@@ -227,14 +227,14 @@ export function update(_req, res, next) {
  * @apiName createEmail
  * @apiGroup Emails
  *
- * @apiParam (Body) {String} subject Mandatory Email subject.
- * @apiParam (Body) {String} html Mandatory Email HTML.
- * @apiParam (Body) {String} to_user_uids Optional String of comma separated user UIDs
- * @apiParam (Body) {String} cc_user_uids Optional String of comma separated user UIDs
- * @apiParam (Body) {String} bcc_user_uids Optional String of comma separated user UIDs
- * @apiParam (Body) {String} scheduled_at Optional Date time string for scdheduled send time
+ * @apiParam (Body) {String} subject Email subject.
+ * @apiParam (Body) {String} html Email HTML.
+ * @apiParam (Body) {String} [to_user_uids] String of comma separated user UIDs
+ * @apiParam (Body) {String} [cc_user_uids] String of comma separated user UIDs
+ * @apiParam (Body) {String} [bcc_user_uids] String of comma separated user UIDs
+ * @apiParam (Body) {String} [scheduled_at] Date time string for scdheduled send time
  * @apiParam (Body) {Number} from_email_id Mandatory ID of from email object
- * @apiParam (Body) {Number} subscription_list_id Optional ID of recipient subscription list
+ * @apiParam (Body) {Number} [subscription_list_id] ID of recipient subscription list
  *
  * @apiSuccess {Object} Response Email object.
  * @apiSuccessExample {json} Success-Response:

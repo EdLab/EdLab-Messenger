@@ -255,8 +255,11 @@ export function create(_req, res, next) {
   if (scheduled_at && new Date(scheduled_at) < new Date()) {
     return next(Response.Invalid('Scheduled time earlier than now'))
   }
-  if ((subscription_list_id && to_user_uids) || (!subscription_list_id && !to_user_uids)) {
-    return next(Response.Invalid('Require (only) one of `to_user_uids` and `subscription_list_id` fields'))
+  if (subscription_list_id && to_user_uids) {
+    return next(Response.Invalid('Require only one of `to_user_uids` and `subscription_list_id` fields'))
+  }
+  if (!subscription_list_id && !to_user_uids) {
+    return next(Response.Invalid('Require at least one of `to_user_uids` and `subscription_list_id` fields'))
   }
   if (subscription_list_id && !scheduled_at) {
     return next(Response.Invalid('Require scheduling time when sending to a subscription list'))

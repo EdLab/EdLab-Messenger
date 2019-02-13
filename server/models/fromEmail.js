@@ -14,34 +14,7 @@ export default function (sequelize, DataTypes) {
     },
   }, {
     underscored: true,
-    hooks: {
-      afterCreate(fromEmail) {
-        ses
-          .verifyEmailIdentity({
-            EmailAddress: fromEmail.email,
-          })
-          .promise()
-          .then(data => {
-            Logger.debug(`New sender email verification request sent for id ${ fromEmail.id }; ${ data }`)
-          })
-          .catch(error => {
-            Logger.debug(`New sender email verification failed for id ${ fromEmail.id }; ${ error }`)
-          })
-      },
-      afterDestroy(fromEmail) {
-        ses
-          .deleteIdentity({
-            Identity: fromEmail.email,
-          })
-          .promise()
-          .then(data => {
-            Logger.debug(`Sender email verification deleted for id ${ fromEmail.id }; ${ data }`)
-          })
-          .catch(error => {
-            Logger.debug(`Sender email verification removal failed for id ${ fromEmail.id }; ${ error }`)
-          })
-      },
-    },
+    hooks: {},
   })
 
   FromEmail.associate = (models) => {
@@ -52,6 +25,53 @@ export default function (sequelize, DataTypes) {
 
   FromEmail.prototype.getEmailAddress = function() {
     return `${ this.sender } <${ this.email }>`
+  }
+
+  FromEmail.isVerified = emailId => {
+    return ses
+      .listIdentities({
+        IdentityType: 'EmailAddress',
+      })
+      .promise()
+      .then(data => {
+        const identitities = data.Identities
+        if (identitities.indexOf(emailId) === -1) {
+          return Promise.resolve(false)
+        }
+        return Promise.resolve(true)
+      })
+      .catch(error => {
+        Logger.error(`Fetching Identities failed: ${ error }`)
+        return Promise.resolve(false)
+      })
+  }
+
+  FromEmail.prototype.verify = function() {
+    ses
+      .verifyEmailIdentity({
+        EmailAddress: this.email,
+      })
+      .promise()
+      .then(data => {
+        Logger.debug(`New sender email verification request sent for id ${ this.id }; ${ data }`)
+      })
+      .catch(error => {
+        Logger.debug(`New sender email verification failed for id ${ this.id }; ${ error }`)
+      })
+  }
+
+  FromEmail.prototype.unVerify = function() {
+    ses
+      .deleteIdentity({
+        Identity: this.email,
+      })
+      .promise()
+      .then(data => {
+        Logger.debug(`Sender email verification deleted for id ${ this.id }; ${ data }`)
+      })
+      .catch(error => {
+        Logger.debug(`Sender email verification removal failed for id ${ this.id }; ${ error }`)
+      })
   }
 
   return FromEmail

@@ -86,16 +86,25 @@ export function update(_req, res, next) {
  *      }
  */
 export function create(_req, res, next) {
-  const fromEmailData = {}
-  FROM_EMAIL_FIELDS.forEach(field => {
-    if (res.locals[field]) {
-      fromEmailData[field] = res.locals[field]
-    }
-  })
+  const { email = null, sender = null } = res.locals
+  if (!sender || !email) {
+    return next(Response.Invalid('Need Sender and Email ID'))
+  }
   FromEmail
-    .create(fromEmailData)
-    .then(fromEmail => res.status(201).send(fromEmail))
-    .catch(e => next(e))
+    .isVerified(email)
+    .then(isVerified => {
+      if (!isVerified) {
+        const responseText = `Email ID ${email} not verified. Verify email ID by first adding it on AWS SES and verifying it.`
+        return next(Response.Invalid(responseText))
+      }
+      return FromEmail
+        .create({
+          sender: sender,
+          email: email,
+        })
+        .then(fromEmail => res.status(201).send(fromEmail))
+        .catch(e => next(e))
+    })
 }
 
 /**

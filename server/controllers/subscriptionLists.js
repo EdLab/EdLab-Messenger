@@ -8,6 +8,8 @@ const SUBSCRIPTION_LIST_FIELDS = ['id', 'name', 'description']
  * @apiName getSubscriptionLists
  * @apiGroup SubscriptionLists
  *
+ * @apiParam {Number} [p=1] Page number
+ *
  * @apiSuccess {Object} Response SubscriptionList object list.
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 200 OK
@@ -45,7 +47,7 @@ export function list(_req, res, next) {
  * @apiGroup SubscriptionLists
  *
  * @apiParam {Number} id Subscription List ID
- * @apiParam {Number} p=1 Page number
+ * @apiParam {Number} [p=1] Page number
  *
  * @apiSuccess {Object} Response Subscription object list.
  * @apiSuccessExample {json} Success-Response:
@@ -195,6 +197,8 @@ export function removeSubscription(_req, res, next) {
  * @apiGroup SubscriptionLists
  *
  * @apiParam {Number} id Subscription List ID
+ * @apiParam {Number} name Subscription List Name
+ * @apiParam {Number} [description] Subscription List Description
  *
  * @apiSuccess {Object} Response SubscriptionList object.
  * @apiSuccessExample {json} Success-Response:
@@ -226,6 +230,9 @@ export function update(_req, res, next) {
  * @api {POST} /subscription_lists Create new Subscription list
  * @apiName createSubscriptionList
  * @apiGroup SubscriptionLists
+ *
+ * @apiParam {Number} name Subscription List Name
+ * @apiParam {Number} [description] Subscription List Description
  *
  * @apiSuccess {Object} Response SubscriptionList object.
  * @apiSuccessExample {json} Success-Response:

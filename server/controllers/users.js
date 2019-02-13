@@ -46,7 +46,7 @@ export function list(_req, res, next) {
  * @apiGroup Users
  *
  * @apiParam {String} uid User UID
- * @apiParam {Number} p=1 Page number
+ * @apiParam {Number} [p=1] Page number
  *
  * @apiSuccess {Object} Response Subscription object list.
  * @apiSuccessExample {json} Success-Response:

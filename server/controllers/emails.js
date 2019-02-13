@@ -1,15 +1,15 @@
 const EMAIL_FIELDS = ['id', 'subject', 'html', 'to_user_uids', 'cc_user_uids', 'bcc_user_uids',
   'scheduled_at', 'from_email_id', 'subscription_list_id']
 const MESSAGE_FIELDS = ['id', 'ses_id', 'to_user_uid']
-// const STATUS_LOG_FIELDS = ['id', 'status', 'status_at', 'comment']
 const NO_MESSAGES_QUERY = '(SELECT COUNT(`id`) FROM `messages` WHERE `email_id` = `email`.`id`)'
+const EMAIL_READ_ONLY_FIELDS = ['completed_at', [SequelizeInst.literal(NO_MESSAGES_QUERY), 'no_messages']]
 
 /**
  * @api {GET} /emails Get Email list
  * @apiName getEmails
  * @apiGroup Emails
  *
- * @apiParam {Number} p=1 Optional Page number for pagination
+ * @apiParam {Number} [p=1] Page number for pagination
  *
  * @apiSuccess {Object} Response Email object list.
  * @apiSuccessExample {json} Success-Response:
@@ -35,9 +35,7 @@ const NO_MESSAGES_QUERY = '(SELECT COUNT(`id`) FROM `messages` WHERE `email_id` 
  */
 export function list(_req, res, next) {
   const { p = 1 } = res.locals
-  const fields = EMAIL_FIELDS
-  fields.push('completed_at')
-  fields.push([SequelizeInst.literal(NO_MESSAGES_QUERY), 'no_messages'])
+  const fields = EMAIL_FIELDS.concat(EMAIL_READ_ONLY_FIELDS)
   Email
     .findAndCountAll({
       limit: AppConfig.PAGINATION_LIMIT,
@@ -48,6 +46,7 @@ export function list(_req, res, next) {
       res.json({
         count: result.count,
         results: result.rows,
+        p: p,
       })
     })
     .catch(e => next(e))
@@ -58,7 +57,7 @@ export function list(_req, res, next) {
  * @apiName getEmail
  * @apiGroup Emails
  *
- * @apiParam {Number} id Mandatory The id of Email that you want to retrieve
+ * @apiParam {Number} id The id of Email that you want to retrieve
  *
  * @apiSuccess {Object} Response Email object.
  * @apiSuccessExample {json} Success-Response:
@@ -79,9 +78,7 @@ export function list(_req, res, next) {
  */
 export function retrieve(_req, res, next) {
   const { id = null } = res.locals
-  const fields = EMAIL_FIELDS
-  fields.push('completed_at')
-  fields.push([SequelizeInst.literal(NO_MESSAGES_QUERY), 'no_messages'])
+  const fields = EMAIL_FIELDS.concat(EMAIL_READ_ONLY_FIELDS)
   Email
     .findByPk(id, {
       attributes: fields,
@@ -101,7 +98,7 @@ export function retrieve(_req, res, next) {
  * @apiGroup Emails
  *
  * @apiParam {Number} id Mandatory The id of Email that you want to retrieve
- * @apiParam {Number} p=1 Optional Page number for pagination
+ * @apiParam {Number} [p=1] Page number for pagination
  *
  * @apiSuccess {Object} Response Message object list.
  * @apiSuccessExample {json} Success-Response:
@@ -156,15 +153,15 @@ export function messages(_req, res, next) {
  * @apiName updateEmail
  * @apiGroup Emails
  *
- * @apiParam {Number} id Mandatory The id of Email that you want to update
- * @apiParam (Body) {String} subject Optional Email subject.
- * @apiParam (Body) {String} html Optional Email HTML.
- * @apiParam (Body) {String} to_user_uids Optional String of comma separated user UIDs
- * @apiParam (Body) {String} cc_user_uids Optional String of comma separated user UIDs
- * @apiParam (Body) {String} bcc_user_uids Optional String of comma separated user UIDs
- * @apiParam (Body) {String} scheduled_at Optional Date time string for scdheduled send time
- * @apiParam (Body) {Number} from_email_id Optional ID of from email object
- * @apiParam (Body) {Number} subscription_list_id Optional ID of recipient subscription list
+ * @apiParam {Number} id The id of Email that you want to update
+ * @apiParam (Body) {String} [subject] Email subject.
+ * @apiParam (Body) {String} [html] Email HTML.
+ * @apiParam (Body) {String} [to_user_uids] String of comma separated user UIDs
+ * @apiParam (Body) {String} [cc_user_uids] String of comma separated user UIDs
+ * @apiParam (Body) {String} [bcc_user_uids] String of comma separated user UIDs
+ * @apiParam (Body) {String} [scheduled_at] Date time string for scdheduled send time
+ * @apiParam (Body) {Number} [from_email_id] ID of from email object
+ * @apiParam (Body) {Number} [subscription_list_id] ID of recipient subscription list
  *
  * @apiSuccess {Object} Response Email object.
  * @apiSuccessExample {json} Success-Response:
@@ -281,7 +278,7 @@ export function create(_req, res, next) {
  * @apiName destroyEmail
  * @apiGroup Emails
  *
- * @apiParam {Number} id Mandatory The id of Email that you want to delete
+ * @apiParam {Number} id The id of Email that you want to delete
  *
  * @apiSuccess {Object} Response empty object.
  * @apiSuccessExample {json} Success-Response:

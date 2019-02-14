@@ -16,8 +16,8 @@ describe('Email APIs', function () {
     request(app)
       .post('/emails')
       .send({
-        subject: 'Test email 1',
-        html: '<h2>test template</h2> <strong>html</strong> with {firstname} and {variable2}',
+        subject: 'Test email 1 - {firstname}',
+        html: '<h2>test template</h2> <strong>html</strong> with {firstname} and {lastname}',
         from_email_id: 1,
         subscription_list_id: 1,
         scheduled_at: '2019-01-30T16:28:00.000Z',

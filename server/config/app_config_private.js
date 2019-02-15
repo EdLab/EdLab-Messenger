@@ -23,6 +23,8 @@ const configs = {
       AWS_REGION: 'us-east-1',
       EMAIL_SENDER: 'TC Library Archive <***REMOVED***@tc.columbia.edu>',
     },
+    SES_CONFIGURATION_SET: '***REMOVED***',
+    SQS_QUEUE_URL: '***REMOVED***/***REMOVED***',
   },
 }
 export default (env = process.env.NODE_ENV) => {

@@ -4,6 +4,8 @@ import app from '../server/app'
 
 describe('Email APIs', function () {
   let email1, email2
+  let fromEmail
+  let subscriptionList
 
   const expect = chai.expect
   chai.should()

@@ -3,21 +3,21 @@
     "username": "***REMOVED***",
     "password": "***REMOVED***",
     "database": "***REMOVED***",
-    "host": "edlab-***REMOVED***.***REMOVED***",
+    "host": "***REMOVED***",
     "dialect": "mysql"
   },
   "test": {
     "username": "***REMOVED***",
     "password": "***REMOVED***",
     "database": "***REMOVED***",
-    "host": "edlab-***REMOVED***.***REMOVED***",
+    "host": "***REMOVED***",
     "dialect": "mysql"
   },
   "integration": {
     "username": "***REMOVED***",
     "password": "***REMOVED***",
     "database": "***REMOVED***",
-    "host": "edlab-***REMOVED***.***REMOVED***",
+    "host": "***REMOVED***",
     "dialect": "mysql"
   },
   "production": {

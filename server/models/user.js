@@ -1,4 +1,4 @@
-import CryptoJS from 'crypto-js'
+import crypto from 'crypto'
 
 export default function (sequelize, DataTypes) {
   const User = sequelize.define('user', {
@@ -33,18 +33,26 @@ export default function (sequelize, DataTypes) {
   }
 
   User.prototype.getUnsubscribeLink = function (subscriptionListId) {
+    const cipher = crypto.createCipher(AppConfig.UNSUBSCRIBE_ENCRYPTION, AppConfig.UNSUBSCRIBE_SECRET)
     const prefix = `${ AppConfig.HOST_URL }subscription_lists/${ subscriptionListId }/unsubscribe`
-    const unsubscribeKey = CryptoJS.AES.encrypt(this.email, AppConfig.UNSUBSCRIBE_SECRET).toString()
+    let unsubscribeKey = cipher.update(JSON.stringify(this.get({ plain: true })), 'utf8', 'hex')
+    unsubscribeKey += cipher.final('hex')
     return `${ prefix }/${ unsubscribeKey }`
   }
 
   User.getUserFromUnsubscribeKey = function (unsubscribeKey) {
-    const bytes  = CryptoJS.AES.decrypt(unsubscribeKey, AppConfig.UNSUBSCRIBE_SECRET)
-    const email = bytes.toString(CryptoJS.enc.Utf8)
+    const decipher = crypto.createDecipher(AppConfig.UNSUBSCRIBE_ENCRYPTION, AppConfig.UNSUBSCRIBE_SECRET)
+    let userString = decipher.update(unsubscribeKey, 'hex', 'utf8')
+    userString += decipher.final('utf8')
+    const user = JSON.parse(userString)
     return User
       .findOne({
         where: {
-          email: email,
+          uid: user.uid,
+          email: user.email,
+          firstname: user.firstname,
+          lastname: user.lastname,
+          username: user.username,
         },
       })
   }

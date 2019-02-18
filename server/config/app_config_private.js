@@ -11,6 +11,7 @@ const configs = {
     PAGINATION_LIMIT: 12,
     ENABLE_CRON: false,
     ACCOUNTS_DB: 'accounts',
+    UNSUBSCRIBE_SECRET: '9fnVBCtVb7YrSlNETC1z',
   },
   development: {
     ENABLE_DOC: true,
@@ -25,6 +26,7 @@ const configs = {
     },
     SES_CONFIGURATION_SET: '***REMOVED***',
     SQS_QUEUE_URL: '***REMOVED***/***REMOVED***',
+    UNSUBSCRIBE_SECRET: 'civ39gTkhMxlSyEU2wrS',
   },
 }
 export default (env = process.env.NODE_ENV) => {

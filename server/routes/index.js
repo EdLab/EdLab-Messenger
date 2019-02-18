@@ -141,6 +141,12 @@ router.use('/subscription_lists',
       getParam('p', { parser: 'integer' }),
       getController('subscriptionLists').subscriptions
     )
+    subscriptionListRouter.get(
+      '/:id/unsubscribe/:unsubscribeKey',
+      getParam('id', { parser: 'integer' }),
+      getParam('unsubscribeKey', { parser: 'string' }),
+      getController('subscriptionLists').unsubscribe
+    )
     subscriptionListRouter.put(
       '/:id/subscriptions',
       getParam('id', { parser: 'integer' }),

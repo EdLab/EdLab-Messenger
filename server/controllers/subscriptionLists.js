@@ -95,7 +95,9 @@ export function subscriptions(_req, res, next) {
  * @apiSuccess {Object} Response Subscription object list.
  * @apiSuccessExample {json} Success-Response:
  *     HTTP/1.1 204 No Content
- *    {}
+ *    {
+ *      message: 'Your have been successfully removed from this subscription list',
+ *    }
  */
 export function unsubscribe(_req, res, next) {
   const { id = null, key = null } = res.locals
@@ -110,7 +112,11 @@ export function unsubscribe(_req, res, next) {
           },
         })
     })
-    .then(response => res.status(204).json(response))
+    .then(() => {
+      res.status(204).json({
+        message: 'Your have been successfully removed from this subscription list',
+      })
+    })
     .catch(e => next(e))
 }
 

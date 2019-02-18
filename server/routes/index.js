@@ -7,6 +7,10 @@ const { getController } = Utility
 
 router.use(urlencoded({ extended: false }))
 
+router.get(['', '/version'], (_req, res)=>{
+  res.json({version: AppConfig.appVersion})
+})
+
 router.use('/templates',
   ((templateRouter = Router()) => {
     templateRouter.get(

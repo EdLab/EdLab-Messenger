@@ -3,17 +3,13 @@ import chai from 'chai'
 import app from '../server/app'
 
 describe('Template APIs', function () {
-  let template1
+  let template
 
   const expect = chai.expect
   chai.should()
 
   after(function(done) {
-    request(app)
-      .delete(`/templates/${ template1.id }`)
-      .end(() => {
-        done()
-      })
+    done()
   })
 
   it('should create a new template', function (done) {
@@ -33,7 +29,7 @@ describe('Template APIs', function () {
         res.body.should.has.property('fields')
         res.body.should.has.property('created_at')
         res.body.should.has.property('updated_at')
-        template1 = res.body
+        template = res.body
         done()
       })
   })
@@ -57,7 +53,7 @@ describe('Template APIs', function () {
 
   it('should get a template', function (done) {
     request(app)
-      .get(`/templates/${ template1.id }`)
+      .get(`/templates/${ template.id }`)
       .expect(200)
       .end((err, res) => {
         expect(err).to.be.null
@@ -75,7 +71,7 @@ describe('Template APIs', function () {
   it('should update a template', function (done) {
     const newName = 'Test template 1 - updated'
     request(app)
-      .put(`/templates/${ template1.id }`)
+      .put(`/templates/${ template.id }`)
       .send({
         name: newName,
       })
@@ -83,7 +79,7 @@ describe('Template APIs', function () {
       .end((err) => {
         expect(err).to.be.null
         request(app)
-          .get(`/templates/${ template1.id }`)
+          .get(`/templates/${ template.id }`)
           .expect(200)
           .end((err, res) => {
             expect(err).to.be.null
@@ -102,15 +98,14 @@ describe('Template APIs', function () {
 
   it('should delete a template', function (done) {
     request(app)
-      .delete(`/templates/${ template1.id }`)
+      .delete(`/templates/${ template.id }`)
       .expect(204)
       .end((err) => {
         expect(err).to.be.null
         request(app)
-          .get(`/templates/${ template1.id }`)
+          .get(`/templates/${ template.id }`)
           .expect(404)
-          .end((err) => {
-            expect(err).to.not.be.null
+          .end(() => {
             done()
           })
       })

@@ -6,8 +6,8 @@ const fromEmails = [
   },
   {
     id: 2,
-    sender: 'TC Library',
-    email: '***REMOVED***@tc.columbia.edu',
+    sender: 'EdLab IT 1',
+    email: 'edlabit@tc.edu',
   },
 ]
 

@@ -187,7 +187,7 @@ export function removeSubscription(_req, res, next) {
         subscription_list_id: id,
       },
     })
-    .then(response => res.status(204).json(response))
+    .then(() => res.status(204).json({}))
     .catch(e => next(e))
 }
 
@@ -273,5 +273,6 @@ export function destroy(_req, res, next) {
   SubscriptionList
     .findByPk(id)
     .then(subscriptionList => subscriptionList.destroy())
+    .then(() => res.status(204).json({}))
     .catch(e => next(e))
 }

@@ -32,7 +32,6 @@ describe('Subscription List APIs', function () {
         res.body.should.has.property('count')
         res.body.should.has.property('results')
         expect(res.body.results).to.be.a('array')
-        expect(res.body.results.length).to.equal(res.body.count)
         res.body.results[0].should.has.property('name')
         res.body.results[0].should.has.property('description')
         originalLength = res.body.count
@@ -51,12 +50,11 @@ describe('Subscription List APIs', function () {
         res.body.should.has.property('count')
         res.body.should.has.property('results')
         expect(res.body.results).to.be.a('array')
-        expect(res.body.results.length).to.equal(res.body.count)
         res.body.results[0].should.has.property('user_uid')
         res.body.results[0].should.has.property('subscription_list_id')
         expect(res.body.results[0].subscription_list_id).to.equal(subscriptionList1.id)
         originalUids = res.body.results.map(s => s.user_uid)
-        end = Math.floor(Math.random() * originalUids.length)
+        end = Math.floor(Math.random() * (originalUids.length - 1)) + 1
         newUids = originalUids.slice(0, end)
         done()
       })

@@ -4,17 +4,20 @@ import app from '../server/app'
 
 describe('Subscription List APIs', function () {
   let subscriptionList1, subscriptionList2, originalLength,
-    originalUids, newUids, end, unsubscribeKey
-  const testUserUid = 'ec41bf74-8f1d-11e6-887e-22000b04a6df'
+    originalUids, newUids, end, testUser
 
   const expect = chai.expect
   chai.should()
 
   before(function(done) {
     User
-      .findByPk(testUserUid)
+      .findOne({
+        where: {
+          email: 'sbr2151@columbia.edu',
+        },
+      })
       .then(user => {
-        unsubscribeKey = user.getUnsubscribeKey()
+        testUser = user
         done()
       })
   })
@@ -180,11 +183,28 @@ describe('Subscription List APIs', function () {
 
   it('unsubscribe a user from a subscription list', function (done) {
     request(app)
-      .get(`/subscription_lists/${ subscriptionList2.id }/unsubscribe/${ unsubscribeKey }`)
-      .expect(204)
+      .post(`/subscription_lists/${ subscriptionList2.id }/subscriptions`)
+      .send({
+        user_uid: testUser.uid,
+      })
+      .expect(201)
       .end((err) => {
         expect(err).to.be.null
-        done()
+        const key = testUser.getUnsubscribeKey()
+        request(app)
+          .get(`/subscription_lists/${ subscriptionList2.id }/unsubscribe/${ key }`)
+          .expect(204)
+          .end((err) => {
+            expect(err).to.be.null
+            request(app)
+              .get(`/subscription_lists/${ subscriptionList2.id }/subscriptions`)
+              .expect(200)
+              .end((err, res) => {
+                expect(err).to.be.null
+                expect(res.body.count).to.equal(0)
+                done()
+              })
+          })
       })
   })
 

@@ -3,10 +3,23 @@ import chai from 'chai'
 import app from '../server/app'
 
 describe('User APIs', function () {
-  const testUserUid = 'ec41bf74-8f1d-11e6-887e-22000b04a6df'
+  let testUser
 
   const expect = chai.expect
   chai.should()
+
+  before(function(done) {
+    User
+      .findOne({
+        where: {
+          email: 'sbr2151@columbia.edu',
+        },
+      })
+      .then(user => {
+        testUser = user
+        done()
+      })
+  })
 
   after(function(done) {
     done()
@@ -33,7 +46,7 @@ describe('User APIs', function () {
 
   it('get the subscriptions of a user', function (done) {
     request(app)
-      .get(`/users/${ testUserUid }/subscriptions`)
+      .get(`/users/${ testUser.uid }/subscriptions`)
       .expect(200)
       .end((err, res) => {
         expect(err).to.be.null
@@ -44,7 +57,7 @@ describe('User APIs', function () {
         if (res.body.count > 0) {
           res.body.results[0].should.has.property('user_uid')
           res.body.results[0].should.has.property('subscription_list_id')
-          expect(res.body.results[0].user_uid).to.equal(testUserUid)
+          expect(res.body.results[0].user_uid).to.equal(testUser.uid)
         }
         done()
       })

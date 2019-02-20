@@ -32,11 +32,16 @@ export default function (sequelize, DataTypes) {
     return `${ this.firstname } ${ this.lastname } <${ this.email }>`
   }
 
-  User.prototype.getUnsubscribeLink = function (subscriptionListId) {
+  User.prototype.getUnsubscribeKey = function () {
     const cipher = crypto.createCipher(AppConfig.UNSUBSCRIBE_ENCRYPTION, AppConfig.UNSUBSCRIBE_SECRET)
-    const prefix = `${ AppConfig.HOST_URL }subscription_lists/${ subscriptionListId }/unsubscribe`
     let unsubscribeKey = cipher.update(JSON.stringify(this.get({ plain: true })), 'utf8', 'hex')
     unsubscribeKey += cipher.final('hex')
+    return unsubscribeKey
+  }
+
+  User.prototype.getUnsubscribeLink = function (subscriptionListId) {
+    const prefix = `${ AppConfig.HOST_URL }subscription_lists/${ subscriptionListId }/unsubscribe`
+    const unsubscribeKey = this.getUnsubscribeKey()
     return `${ prefix }/${ unsubscribeKey }`
   }
 

@@ -7,8 +7,8 @@ import { json } from 'body-parser'
 
 const env = process.env.NODE_ENV || 'development'
 
-import publicConfig from './config/app_config'
-import privateConfig from './config/app_config_private'
+import publicConfig from '../config/app_config'
+import privateConfig from '../config/app_config_private'
 import { version } from '../jenkins.json'
 const localConfig = require('dotenv').config()
 

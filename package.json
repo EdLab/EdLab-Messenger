@@ -14,6 +14,8 @@
     "build": "npx babel server/ --copy-files -d dist",
     "start:docker": "pm2-docker start ecosystem.config.js --only app-prod",
     "migrate": "sequelize --config config/DatabaseConfig.json db:migrate",
+    "seed": "sequelize --config config/DatabaseConfig.json db:seed:all",
+    "unseed": "sequelize --config config/DatabaseConfig.json db:seed:undo:all",
     "doc": "apidoc -v -i server/controllers -o docs/",
     "test": "NODE_ENV=test mocha \"tests/**/*.test.js\" --require babel-polyfill --require @babel/register --exit",
     "test:report": "NODE_ENV=test mocha \"tests/**/*.test.js\" --require babel-polyfill --require @babel/register --reporter mochawesome --reporter-options reportDir=test/report,autoOpen  --exit",

@@ -85,6 +85,42 @@ export function subscriptions(_req, res, next) {
 }
 
 /**
+ * @api {GET} /subscription_lists/:id/unsubscribe/:key Get list of Subscriptions of a subscription list
+ * @apiName unsubscribeUserFromSubscriptionList
+ * @apiGroup SubscriptionLists
+ *
+ * @apiParam {Number} id Subscription List ID
+ * @apiParam {String} key Unsubscribe Key
+ *
+ * @apiSuccess {Object} Response Subscription object list.
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 204 No Content
+ *    {
+ *      message: 'Your have been successfully removed from this subscription list',
+ *    }
+ */
+export function unsubscribe(_req, res, next) {
+  const { id = null, key = null } = res.locals
+  User
+    .getUserFromUnsubscribeKey(key)
+    .then(user => {
+      Subscription
+        .destroy({
+          where: {
+            user_uid: user.uid,
+            subscription_list_id: id,
+          },
+        })
+    })
+    .then(() => {
+      res.status(204).json({
+        message: 'Your have been successfully removed from this subscription list',
+      })
+    })
+    .catch(e => next(e))
+}
+
+/**
  * @api {PUT} /subscription_lists/:id/subscriptions Update list of Subscriptions of a subscription list
  * @apiName updateSubscriptionListSubscriptions
  * @apiGroup SubscriptionLists

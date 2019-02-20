@@ -30,7 +30,9 @@ export default function (sequelize, DataTypes) {
   }
 
   Message.send = (email, to_user, from_email_address, cc_emails = [], bcc_emails = []) => {
-    const html = format(email.html, to_user.get({ plain: true }))
+    const user = to_user.get({ plain: true })
+    user.unsubscribeLink = to_user.getUnsubscribeLink()
+    const html = format(email.html, user)
     return ses
       .sendEmail({
         Destination: {

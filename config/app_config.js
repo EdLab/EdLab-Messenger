@@ -5,11 +5,12 @@ const configs = {
     LOG_LEVEL: 'debug',
   },
   development: {
-    HOST_URL: 'http://localhost:3000',
+    HOST_URL: 'https://dev-***REMOVED***2.tc-***REMOVED***.org/',
   },
   test: {
     LOG_LEVEL: 'fatal',
     DISABLE_SEND_EMAIL: true,
+    HOST_URL: 'http://localhost:3000/',
   },
   integration: {
     HOST_URL: 'https://***REMOVED***2.tc-***REMOVED***.org/',

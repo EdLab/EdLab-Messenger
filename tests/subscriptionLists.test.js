@@ -4,10 +4,20 @@ import app from '../server/app'
 
 describe('Subscription List APIs', function () {
   let subscriptionList1, subscriptionList2, originalLength,
-    originalUids, newUids, end
+    originalUids, newUids, end, unsubscribeKey
+  const testUserUid = 'ec41bf74-8f1d-11e6-887e-22000b04a6df'
 
   const expect = chai.expect
   chai.should()
+
+  before(function(done) {
+    User
+      .findByPk(testUserUid)
+      .then(user => {
+        unsubscribeKey = user.getUnsubscribeKey()
+        done()
+      })
+  })
 
   after(function(done) {
     request(app)
@@ -164,6 +174,16 @@ describe('Subscription List APIs', function () {
         res.body.should.has.property('name')
         res.body.should.has.property('description')
         expect(res.body.name).to.equal('Updated name')
+        done()
+      })
+  })
+
+  it('unsubscribe a user from a subscription list', function (done) {
+    request(app)
+      .get(`/subscription_lists/${ subscriptionList2.id }/unsubscribe/${ unsubscribeKey }`)
+      .expect(204)
+      .end((err) => {
+        expect(err).to.be.null
         done()
       })
   })

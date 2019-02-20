@@ -42,15 +42,11 @@ describe('User APIs', function () {
         res.body.should.has.property('results')
         expect(res.body.results).to.be.a('array')
         if (res.body.count > 0) {
-            res.body.results[0].should.has.property('user_uid')
-            res.body.results[0].should.has.property('subscription_list_id')
-            expect(res.body.results[0].user_uid).to.equal(testUserUid)
+          res.body.results[0].should.has.property('user_uid')
+          res.body.results[0].should.has.property('subscription_list_id')
+          expect(res.body.results[0].user_uid).to.equal(testUserUid)
         }
         done()
       })
-  })
-
-  it('unsubscribe a user : TODO', function (done) {
-    done()
   })
 })

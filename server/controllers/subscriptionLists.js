@@ -103,7 +103,7 @@ export function unsubscribe(_req, res, next) {
   User
     .getDataFromUnsubscribeKey(key)
     .spread((user, subscriptionListId) => {
-      Subscription
+      return Subscription
         .destroy({
           where: {
             user_uid: user.uid,

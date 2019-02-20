@@ -190,9 +190,9 @@ describe('Subscription List APIs', function () {
       .expect(201)
       .end((err) => {
         expect(err).to.be.null
-        const key = testUser.getUnsubscribeKey()
+        const key = testUser.getUnsubscribeKey(subscriptionList2.id)
         request(app)
-          .get(`/subscription_lists/${ subscriptionList2.id }/unsubscribe/${ key }`)
+          .get(`/subscription_lists/unsubscribe/${ key }`)
           .expect(204)
           .end((err) => {
             expect(err).to.be.null

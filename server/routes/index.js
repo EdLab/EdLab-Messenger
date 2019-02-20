@@ -7,7 +7,7 @@ const { getController } = Utility
 
 router.use(urlencoded({ extended: false }))
 
-router.get(['', '/version'], (_req, res)=>{
+router.get(['', '/version'], (_req, res) => {
   res.json({version: AppConfig.appVersion})
 })
 
@@ -146,8 +146,7 @@ router.use('/subscription_lists',
       getController('subscriptionLists').subscriptions
     )
     subscriptionListRouter.get(
-      '/:id/unsubscribe/:key',
-      getParam('id', { parser: 'integer' }),
+      '/unsubscribe/:key',
       getParam('key', { parser: 'string' }),
       getController('subscriptionLists').unsubscribe
     )

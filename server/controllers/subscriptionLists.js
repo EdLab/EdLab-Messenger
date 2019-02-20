@@ -85,11 +85,10 @@ export function subscriptions(_req, res, next) {
 }
 
 /**
- * @api {GET} /subscription_lists/:id/unsubscribe/:key Get list of Subscriptions of a subscription list
+ * @api {GET} /subscription_lists/unsubscribe/:key Unsubscribe User
  * @apiName unsubscribeUserFromSubscriptionList
  * @apiGroup SubscriptionLists
  *
- * @apiParam {Number} id Subscription List ID
  * @apiParam {String} key Unsubscribe Key
  *
  * @apiSuccess {Object} Response Subscription object list.
@@ -100,15 +99,15 @@ export function subscriptions(_req, res, next) {
  *    }
  */
 export function unsubscribe(_req, res, next) {
-  const { id = null, key = null } = res.locals
+  const { key = null } = res.locals
   User
-    .getUserFromUnsubscribeKey(key)
-    .then(user => {
+    .getDataFromUnsubscribeKey(key)
+    .spread((user, subscriptionListId) => {
       Subscription
         .destroy({
           where: {
             user_uid: user.uid,
-            subscription_list_id: id,
+            subscription_list_id: subscriptionListId,
           },
         })
     })

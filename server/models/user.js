@@ -32,24 +32,27 @@ export default function (sequelize, DataTypes) {
     return `${ this.firstname } ${ this.lastname } <${ this.email }>`
   }
 
-  User.prototype.getUnsubscribeKey = function () {
+  User.prototype.getUnsubscribeKey = function (subscriptionListId) {
     const cipher = crypto.createCipher(AppConfig.UNSUBSCRIBE_ENCRYPTION, AppConfig.UNSUBSCRIBE_SECRET)
-    let unsubscribeKey = cipher.update(JSON.stringify(this.get({ plain: true })), 'utf8', 'hex')
+    const user = this.get({ plain: true })
+    user.subscriptionListId = subscriptionListId
+    let unsubscribeKey = cipher.update(JSON.stringify(user), 'utf8', 'hex')
     unsubscribeKey += cipher.final('hex')
     return unsubscribeKey
   }
 
   User.prototype.getUnsubscribeLink = function (subscriptionListId) {
     const prefix = `${ AppConfig.HOST_URL }subscription_lists/${ subscriptionListId }/unsubscribe`
-    const unsubscribeKey = this.getUnsubscribeKey()
+    const unsubscribeKey = this.getUnsubscribeKey(subscriptionListId)
     return `${ prefix }/${ unsubscribeKey }`
   }
 
-  User.getUserFromUnsubscribeKey = function (unsubscribeKey) {
+  User.getDataFromUnsubscribeKey = function (unsubscribeKey) {
     const decipher = crypto.createDecipher(AppConfig.UNSUBSCRIBE_ENCRYPTION, AppConfig.UNSUBSCRIBE_SECRET)
     let userString = decipher.update(unsubscribeKey, 'hex', 'utf8')
     userString += decipher.final('utf8')
     const user = JSON.parse(userString)
+    const subscriptionListId = user.subscriptionListId
     return User
       .findOne({
         where: {
@@ -59,6 +62,9 @@ export default function (sequelize, DataTypes) {
           lastname: user.lastname,
           username: user.username,
         },
+      })
+      .then(user => {
+        return Promise.resolve([user, subscriptionListId])
       })
   }
 

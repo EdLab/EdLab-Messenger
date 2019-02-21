@@ -18,7 +18,7 @@
     "unseed": "sequelize --config config/DatabaseConfig.json db:seed:undo:all",
     "doc": "apidoc -v -i server/controllers -o docs/",
     "test": "NODE_ENV=test mocha \"tests/**/*.test.js\" --require babel-polyfill --require @babel/register --exit",
-    "test:report": "NODE_ENV=test mocha \"tests/**/*.test.js\" --require babel-polyfill --require @babel/register --reporter mochawesome --reporter-options reportDir=test/report,autoOpen  --exit",
+    "test:report": "NODE_ENV=test mocha \"tests/**/*.test.js\" --require babel-polyfill --require @babel/register --reporter mochawesome --reporter-options reportDir=tests/report,autoOpen  --exit",
     "test:coverage": "NODE_ENV=test nyc mocha \"tests/**/*.test.js\" --require babel-polyfill --require @babel/register --exit && nyc report --reporter=html && open coverage/index.html"
   },
   "author": "EdLab Dev Team <edlabit@tc.columbia.edu>",

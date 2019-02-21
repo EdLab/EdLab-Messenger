@@ -5,6 +5,7 @@ import moment from 'moment'
 
 describe('Email APIs', function () {
   let email1, email2, email3, awsTestUserIds
+  const messageIds = []
 
   var nextHour = moment().add(1, 'hour').startOf('hour');
 
@@ -244,6 +245,7 @@ describe('Email APIs', function () {
         res.body.results[0].should.has.property('ses_id')
         res.body.results[0].should.has.property('to_user_uid')
         expect(res.body.count).to.equal(awsTestUserIds.length)
+        res.body.results.forEach(m => messageIds.push(m.id))
         done()
       })
   })
@@ -285,6 +287,7 @@ describe('Email APIs', function () {
   })
 
   it('should send scheduled emails', function (done) {
+    this.timeout(10000)
     Email
       .update({
         scheduled_at: moment().subtract(1, 'minute'),
@@ -324,12 +327,29 @@ describe('Email APIs', function () {
             res.body.results[0].should.has.property('ses_id')
             res.body.results[0].should.has.property('to_user_uid')
             expect(res.body.count).to.equal(awsTestUserIds.length)
+            res.body.results.forEach(m => messageIds.push(m.id))
             done()
           })
       })
   })
 
-  it('TODO : should udpate status logs', function (done) {
-    done()
+  it('should udpate status logs', function (done) {
+    this.timeout(10000)
+    StatusLog
+      .updateStatuses()
+      .then(() => {
+        return StatusLog.findAll()
+      })
+      .then(logs => {
+        const mIds = logs.map(l => l.message_id)
+        const isVerified = true
+        for (let i = 0; i < messageIds.length; i++) {
+          if (mIds.indexOf(messageIds[i]) == -1) {
+            isVerified = false
+          }
+        }
+        expect(isVerified).to.be.true
+        done()
+      })
   })
 })

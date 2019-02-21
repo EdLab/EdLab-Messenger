@@ -33,6 +33,7 @@ export default function (sequelize, DataTypes) {
     const user = to_user.get({ plain: true })
     user.unsubscribeLink = to_user.getUnsubscribeLink()
     const html = format(email.html, user)
+    const subject = format(email.subject, user)
     return ses
       .sendEmail({
         Destination: {
@@ -41,7 +42,7 @@ export default function (sequelize, DataTypes) {
           ToAddresses: [to_user.getEmailAddress()],
         },
         Message: {
-          Subject: { Data: email.subject },
+          Subject: { Data: subject },
           Body: {
             Html: { Data: html },
             Text: { Data: createTextVersion(html) },

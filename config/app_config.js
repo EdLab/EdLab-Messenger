@@ -10,7 +10,7 @@ const configs = {
   test: {
     LOG_LEVEL: 'fatal',
     DISABLE_SEND_EMAIL: true,
-    HOST_URL: 'http://localhost:3000/',
+    HOST_URL: 'http://localhost:8000/',
   },
   integration: {
     HOST_URL: 'https://***REMOVED***2.tc-***REMOVED***.org/',

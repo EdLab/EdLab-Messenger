@@ -284,8 +284,49 @@ describe('Email APIs', function () {
       })
   })
 
-  it('TODO : should send scheduled emails', function (done) {
-    done()
+  it('should send scheduled emails', function (done) {
+    Email
+      .update({
+        scheduled_at: moment().subtract(1, 'minute'),
+      }, { where: { id: email1.id } })
+      .then(() => {
+        return Email.sendScheduledEmails()
+      })
+      .then(() => {
+        const check = () => {
+          request(app)
+            .get(`/emails/${ email1.id }`)
+            .expect(200)
+            .end((err, res) => {
+              expect(err).to.be.null
+              if (res.body.completed_at) {
+                return Promise.resolve()
+              } else {
+                setTimeout(function () {
+                  check()
+                }, 300)
+              }
+            })
+        }
+        check()
+      })
+      .then(() => {
+        request(app)
+          .get(`/emails/${ email1.id }/messages`)
+          .expect(200)
+          .end((err, res) => {
+            expect(err).to.be.null
+            expect(res.body).to.be.a('object')
+            res.body.should.has.property('count')
+            res.body.should.has.property('results')
+            expect(res.body.results).to.be.a('array')
+            res.body.results[0].should.has.property('id')
+            res.body.results[0].should.has.property('ses_id')
+            res.body.results[0].should.has.property('to_user_uid')
+            expect(res.body.count).to.equal(awsTestUserIds.length)
+            done()
+          })
+      })
   })
 
   it('TODO : should udpate status logs', function (done) {

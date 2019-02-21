@@ -23,7 +23,6 @@ describe('From Email APIs', function () {
         res.body.should.has.property('count')
         res.body.should.has.property('results')
         expect(res.body.results).to.be.a('array')
-        expect(res.body.results.length).to.equal(res.body.count)
         res.body.results[0].should.has.property('sender')
         res.body.results[0].should.has.property('email')
         originalLength = res.body.count

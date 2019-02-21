@@ -36,6 +36,7 @@ export function list(_req, res, next) {
       res.json({
         count: result.count,
         results: result.rows,
+        p: p,
       })
     })
     .catch(e => next(e))

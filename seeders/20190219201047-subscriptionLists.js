@@ -9,6 +9,11 @@ const subscriptionLists = [
     name: 'Ryan and Srujan',
     description: 'List containing Ryan and Srujan',
   },
+  {
+    id: 3,
+    name: 'AWS Tests',
+    description: 'List containing AWS Test Email IDs',
+  },
 ]
 
 module.exports = {

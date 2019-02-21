@@ -108,16 +108,8 @@ export function retrieve(_req, res, next) {
  *      "results": [
  *        {
  *          "id": 1,
- *          "subject": "New from the Teachers College Archives",
- *          "html": "<h2>Email template here with a user specific variable like ${ firstname } of ${ lastname }</h2>"
- *          "to_user_uids": null,
- *          "cc_user_uids": null,
- *          "bcc_user_uids": null,
- *          "scheduled_at": "2019-01-30T16:28:00.000Z",
- *          "from_email_id": 2,
- *          "subscription_list_id": 1,
- *          "completed_at": "2019-01-30T16:30:03.000Z",
- *          "no_messages": 7
+ *          "ses_id": "010001689f98889b-708f59b1-0a15-43de-90ff-3369ab0537d6-000000",
+ *          "to_user_uid": "046b7d0b-5f18-11e6-887e-22000b04a6df"
  *        },
  *      ]
  *    }
@@ -143,6 +135,7 @@ export function messages(_req, res, next) {
       res.json({
         count: result.count,
         results: result.rows,
+        p: p,
       })
     })
     .catch(e => next(e))

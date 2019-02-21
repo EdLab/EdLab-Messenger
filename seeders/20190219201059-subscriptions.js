@@ -44,6 +44,21 @@ const subscriptions = [
     user_uid: '046b7d0b-5f18-11e6-887e-22000b04a6df',
     subscription_list_id: 2,
   },
+  {
+    id: 10,
+    user_uid: '41f9ebcf-35f3-11e9-b884-069a23f2fafa',
+    subscription_list_id: 3,
+  },
+  {
+    id: 11,
+    user_uid: '57cb5f29-35f3-11e9-b884-069a23f2fafa',
+    subscription_list_id: 3,
+  },
+  {
+    id: 12,
+    user_uid: '3299d182-35f3-11e9-b884-069a23f2fafa',
+    subscription_list_id: 3,
+  },
 ]
 
 module.exports = {

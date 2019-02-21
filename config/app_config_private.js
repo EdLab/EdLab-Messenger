@@ -10,8 +10,8 @@ const configs = {
     SQS_QUEUE_URL: '***REMOVED***/***REMOVED***',
     PAGINATION_LIMIT: 12,
     ENABLE_CRON: false,
-    ACCOUNTS_DB: 'accounts',
-    UNSUBSCRIBE_SECRET: '***REMOVED***dvPiRcBm',
+    ACCOUNTS_DB: 'sso',
+    UNSUBSCRIBE_SECRET: '***REMOVED***',
     UNSUBSCRIBE_ENCRYPTION: 'aes-256-ctr',
   },
   development: {
@@ -27,7 +27,8 @@ const configs = {
     },
     SES_CONFIGURATION_SET: '***REMOVED***',
     SQS_QUEUE_URL: '***REMOVED***/***REMOVED***',
-    UNSUBSCRIBE_SECRET: '***REMOVED***iI9hLJvWEoEUB',
+    ACCOUNTS_DB: 'accounts',
+    UNSUBSCRIBE_SECRET: '***REMOVED***',
   },
 }
 export default (env = process.env.NODE_ENV) => {

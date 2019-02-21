@@ -33,5 +33,12 @@
     "database": "***REMOVED***",
     "host": "***REMOVED***.***REMOVED***",
     "dialect": "mysql"
+  },
+  "sso": {
+    "host": "***REMOVED***",
+    "database": "***REMOVED***",
+    "username": "***REMOVED***",
+    "password": "***REMOVED***@)!*",
+    "dialect": "mysql"
   }
 }

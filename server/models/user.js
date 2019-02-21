@@ -1,7 +1,7 @@
 import crypto from 'crypto'
 
 export default function (sequelize, DataTypes) {
-  const User = sequelize.define('user', {
+  const User = sequelize.define('subscription_user', {
     uid: {
       type: DataTypes.STRING(128),
       allowNull: false,
@@ -33,12 +33,13 @@ export default function (sequelize, DataTypes) {
   }
 
   User.prototype.getUnsubscribeKey = function (subscriptionListId) {
-    const cipher = crypto.createCipher(AppConfig.UNSUBSCRIBE_ENCRYPTION, AppConfig.UNSUBSCRIBE_SECRET)
+    const iv = Buffer.from(crypto.randomBytes(16))
+    const cipher = crypto.createCipheriv(AppConfig.UNSUBSCRIBE_ENCRYPTION, AppConfig.UNSUBSCRIBE_SECRET, iv)
     const user = this.get({ plain: true })
     user.subscriptionListId = subscriptionListId
     let unsubscribeKey = cipher.update(JSON.stringify(user), 'utf8', 'hex')
     unsubscribeKey += cipher.final('hex')
-    return unsubscribeKey
+    return `${ unsubscribeKey }:${ iv.toString('hex') }`
   }
 
   User.prototype.getUnsubscribeLink = function (subscriptionListId) {
@@ -47,8 +48,10 @@ export default function (sequelize, DataTypes) {
     return `${ prefix }/${ unsubscribeKey }`
   }
 
-  User.getDataFromUnsubscribeKey = function (unsubscribeKey) {
-    const decipher = crypto.createDecipher(AppConfig.UNSUBSCRIBE_ENCRYPTION, AppConfig.UNSUBSCRIBE_SECRET)
+  User.getDataFromUnsubscribeKey = function (unsubscribeKeyIv) {
+    const [unsubscribeKey, ivString] = unsubscribeKeyIv.split(':')
+    const iv = Buffer.from(ivString, 'hex')
+    const decipher = crypto.createDecipheriv(AppConfig.UNSUBSCRIBE_ENCRYPTION, AppConfig.UNSUBSCRIBE_SECRET, iv)
     let userString = decipher.update(unsubscribeKey, 'hex', 'utf8')
     userString += decipher.final('utf8')
     const user = JSON.parse(userString)

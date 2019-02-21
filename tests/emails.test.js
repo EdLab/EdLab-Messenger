@@ -248,10 +248,22 @@ describe('Email APIs', function () {
       })
   })
 
+  it('should not be able to update an unscheduled / completed email', function (done) {
+    request(app)
+      .put(`/emails/${ email3.id }`)
+      .send({
+        subject: 'Test email 3 - {lastname}',
+      })
+      .expect(403)
+      .end(() => {
+        done()
+      })
+  })
+
   it('should not be able to delete an unscheduled / completed email', function (done) {
     request(app)
       .delete(`/emails/${ email3.id }`)
-      .expect(404)
+      .expect(403)
       .end(() => {
         done()
       })

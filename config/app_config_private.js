@@ -16,9 +16,14 @@ const configs = {
   },
   development: {
     ENABLE_DOC: true,
+    ACCOUNTS_DB: 'sso',
   },
-  test: {},
-  integration: {},
+  test: {
+    ACCOUNTS_DB: 'sso',
+  },
+  integration: {
+    ACCOUNTS_DB: 'sso',
+  },
   production: {
     ENABLE_CRON: true,
     AWS_CONFIG: {
@@ -33,7 +38,7 @@ const configs = {
 }
 export default (env = process.env.NODE_ENV) => {
   const dbConfigEnv = process.env.USE_DATABASE || env
-  const accountsDbConfig = configs.default.ACCOUNTS_DB
+  const accountsDbConfig = configs[env].ACCOUNTS_DB
   return Object.assign(configs['default'], configs[env], {
     DBCONFIG: dbConfig[dbConfigEnv],
     ACCOUNTS_DBCONFIG: dbConfig[accountsDbConfig],

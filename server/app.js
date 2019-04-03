@@ -34,7 +34,9 @@ app.locals.AppConfig = AppConfig
 app.locals.appVersion = version
 app.locals.appVersionHash = Buffer.from(`MESSENGER_VERSION:${ version }`).toString('hex')
 
+app.set('view engine', 'ejs')
 app.set('trust proxy', ['loopback', 'uniquelocal', '172.30.0.0/16'])
+app.set('views', './server/views')
 app.use(helmet({ frameguard: false }))
 app.use(cors({
   origin: [

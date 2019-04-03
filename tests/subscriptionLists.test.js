@@ -190,10 +190,10 @@ describe('Subscription List APIs', function () {
       .expect(201)
       .end((err) => {
         expect(err).to.be.null
-        const key = testUser.getUnsubscribeKey(subscriptionList2.id)
+        const key = testUser.getKey(subscriptionList2.id)
         request(app)
           .get(`/subscription_lists/unsubscribe/${ key }`)
-          .expect(204)
+          .expect(200)
           .end((err) => {
             expect(err).to.be.null
             request(app)
@@ -204,6 +204,26 @@ describe('Subscription List APIs', function () {
                 expect(res.body.count).to.equal(0)
                 done()
               })
+          })
+      })
+  })
+
+  it('subscribe a user to a subscription list', function (done) {
+    const key = testUser.getKey(subscriptionList2.id)
+    request(app)
+      .get(`/subscription_lists/subscribe/${ key }`)
+      .expect(200)
+      .end((err) => {
+        expect(err).to.be.null
+        request(app)
+          .get(`/subscription_lists/${ subscriptionList2.id }/subscriptions`)
+          .expect(200)
+          .end((err, res) => {
+            expect(err).to.be.null
+            expect(res.body).to.be.a('object')
+            const uids = res.body.results.map(s => s.user_uid)
+            expect(uids).to.include(testUser.uid)
+            done()
           })
       })
   })

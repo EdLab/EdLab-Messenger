@@ -101,9 +101,9 @@ export function subscriptions(_req, res, next) {
  */
 export function unsubscribe(_req, res, next) {
   const { key = null } = res.locals
-  User
-    .getDataFromUnsubscribeKey(key)
-    .spread((user, subscriptionListId) => {
+  return User
+    .getDataFromKey(key)
+    .then(([user, subscriptionListId]) => {
       return Subscription
         .destroy({
           where: {
@@ -113,9 +113,37 @@ export function unsubscribe(_req, res, next) {
         })
     })
     .then(() => {
-      res.status(204).json({
-        message: 'Your have been successfully removed from this subscription list',
-      })
+      return res.render('unsubscribe', { subscribeLink: `/subscription_lists/subscribe/${ key }` })
+    })
+    .catch(e => next(e))
+}
+
+/**
+ * @api {GET} /subscription_lists/subscribe/:key Subscribe User
+ * @apiName subscribeUserToSubscriptionList
+ * @apiGroup SubscriptionLists
+ *
+ * @apiParam {String} key Subscribe Key
+ *
+ * @apiSuccess {Object} Response Subscription object list.
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 HTML Content
+ */
+export function subscribe(_req, res, next) {
+  const { key = null } = res.locals
+  return User
+    .getDataFromKey(key)
+    .spread((user, subscriptionListId) => {
+      return Subscription
+        .findOrCreate({
+          where: {
+            user_uid: user.uid,
+            subscription_list_id: subscriptionListId,
+          },
+        })
+    })
+    .then(() => {
+      return res.render('subscribe')
     })
     .catch(e => next(e))
 }

@@ -150,6 +150,11 @@ router.use('/subscription_lists',
       getParam('key', { parser: 'string' }),
       getController('subscriptionLists').unsubscribe
     )
+    subscriptionListRouter.get(
+      '/subscribe/:key',
+      getParam('key', { parser: 'string' }),
+      getController('subscriptionLists').subscribe
+    )
     subscriptionListRouter.put(
       '/:id/subscriptions',
       getParam('id', { parser: 'integer' }),

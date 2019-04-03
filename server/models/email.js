@@ -104,7 +104,8 @@ export default function (sequelize, DataTypes) {
         return reject(`Email with id: ${ this.id } completed at ${ this.completed_at }`)
       }
       let to_users, cc_emails, bcc_emails, from_email_address
-      let sleepTime, startTime, sendRate, timeDiff
+      let sleepTime, startTime, sendRate
+      let timeDiff = 0
       let noSuccess = 0
       let noFailed = 0
       const sendMessages = () => {
@@ -118,7 +119,7 @@ export default function (sequelize, DataTypes) {
             `Email sending completed at ${ completed_at.toString() };
                id: ${ this.id };
                ${ noSuccess } successfully sent messages;
-               ${ noFailed } failed messges`
+               ${ noFailed } failed messages`
           )
           return resolve()
         }

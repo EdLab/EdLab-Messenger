@@ -101,9 +101,11 @@ export function subscriptions(_req, res, next) {
  */
 export function unsubscribe(_req, res, next) {
   const { key = null } = res.locals
+  let listId
   return User
     .getDataFromKey(key)
     .then(([user, subscriptionListId]) => {
+      listId = subscriptionListId
       return Subscription
         .destroy({
           where: {
@@ -112,8 +114,13 @@ export function unsubscribe(_req, res, next) {
           },
         })
     })
-    .then(() => {
-      return res.render('unsubscribe', { subscribeLink: `/subscription_lists/subscribe/${ key }` })
+    .then(() => SubscriptionList.findByPk(listId))
+    .then(subscriptionList => {
+      return res.render('unsubscribe', {
+        subscribeLink: `/subscription_lists/subscribe/${ key }`,
+        subscriptionListName: subscriptionList.name,
+        subscriptionListDescription: subscriptionList.description,
+      })
     })
     .catch(e => next(e))
 }
@@ -131,9 +138,11 @@ export function unsubscribe(_req, res, next) {
  */
 export function subscribe(_req, res, next) {
   const { key = null } = res.locals
+  let listId
   return User
     .getDataFromKey(key)
-    .spread((user, subscriptionListId) => {
+    .then(([user, subscriptionListId]) => {
+      listId = subscriptionListId
       return Subscription
         .findOrCreate({
           where: {
@@ -142,8 +151,12 @@ export function subscribe(_req, res, next) {
           },
         })
     })
-    .then(() => {
-      return res.render('subscribe')
+    .then(() => SubscriptionList.findByPk(listId))
+    .then(subscriptionList => {
+      return res.render('subscribe', {
+        subscriptionListName: subscriptionList.name,
+        subscriptionListDescription: subscriptionList.description,
+      })
     })
     .catch(e => next(e))
 }

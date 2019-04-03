@@ -118,8 +118,8 @@ export function unsubscribe(_req, res, next) {
     .then(subscriptionList => {
       return res.render('unsubscribe', {
         subscribeLink: `/subscription_lists/subscribe/${ key }`,
-        subscriptionListName: subscriptionList.name,
-        subscriptionListDescription: subscriptionList.description,
+        subscriptionListName: subscriptionList ? subscriptionList.name : '',
+        subscriptionListDescription: subscriptionList ? subscriptionList.description : '',
       })
     })
     .catch(e => next(e))
@@ -154,8 +154,8 @@ export function subscribe(_req, res, next) {
     .then(() => SubscriptionList.findByPk(listId))
     .then(subscriptionList => {
       return res.render('subscribe', {
-        subscriptionListName: subscriptionList.name,
-        subscriptionListDescription: subscriptionList.description,
+        subscriptionListName: subscriptionList ? subscriptionList.name : '',
+        subscriptionListDescription: subscriptionList ? subscriptionList.description : '',
       })
     })
     .catch(e => next(e))

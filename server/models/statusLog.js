@@ -2,10 +2,20 @@ import AWS from '../lib/AWS.js'
 const sqs = new AWS.SQS()
 const Op = SequelizeInst.Op
 
+const STATUSES = {
+  BOUNCE: 'Bounce',
+  CLICK: 'Click',
+  COMPLAINT: 'Complaint',
+  DELIVERY: 'Delivery',
+  OPEN: 'Open',
+  SEND: 'Send',
+  REJECT: 'Reject',
+}
+
 export default function (sequelize, DataTypes) {
   const StatusLog = sequelize.define('status_log', {
     status: {
-      type: DataTypes.STRING(64),
+      type: DataTypes.ENUM(Object.values(STATUSES)),
       allowNull: false,
     },
     status_at: {
@@ -20,6 +30,8 @@ export default function (sequelize, DataTypes) {
     underscored: true,
     hooks: {},
   })
+
+  StatusLog.STATUSES = STATUSES
 
   StatusLog.associate = (models) => {
     StatusLog.belongsTo(models.message, {
@@ -73,7 +85,7 @@ export default function (sequelize, DataTypes) {
                 const sesId = log.mail.messageId
                 const event = log.eventType
                 const body = log[event.toLowerCase()]
-                if (orderedSesIds.indexOf(sesId) >= 0) {
+                if (orderedSesIds.includes(sesId)) {
                   const messageId = orderedIds[orderedSesIds.indexOf(sesId)]
                   statusLogs.push({
                     status: event,
@@ -81,6 +93,9 @@ export default function (sequelize, DataTypes) {
                     status_at: body.timestamp,
                     comment: JSON.stringify(body),
                   })
+                  if ([STATUSES.BOUNCE, STATUSES.COMPLAINT, STATUSES.REJECT].includes(event)) {
+                    SubscriptionList.unsubscribe(messageId)
+                  }
                 }
               })
               return StatusLog.bulkCreate(statusLogs)

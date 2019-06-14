@@ -1,4 +1,4 @@
-const EMAIL_FIELDS = ['id', 'subject', 'html', 'to_user_uids', 'cc_user_uids', 'bcc_user_uids',
+const EMAIL_FIELDS = ['id', 'subject', 'html', 'to_user_emails', 'to_user_uids', 'cc_user_uids', 'bcc_user_uids',
   'scheduled_at', 'from_email_id', 'subscription_list_id']
 const MESSAGE_FIELDS = ['id', 'ses_id', 'to_user_uid']
 const NO_MESSAGES_QUERY = '(SELECT COUNT(`id`) FROM `messages` WHERE `email_id` = `email`.`id`)'
@@ -21,6 +21,7 @@ const EMAIL_READ_ONLY_FIELDS = ['completed_at', [SequelizeInst.literal(NO_MESSAG
  *          "id": 1,
  *          "subject": "New from the Teachers College Archives",
  *          "html": "<h2>Email template here with a user specific variable like ${ firstname } of ${ lastname }</h2>"
+ *          "to_user_emails": null,
  *          "to_user_uids": null,
  *          "cc_user_uids": null,
  *          "bcc_user_uids": null,
@@ -66,6 +67,7 @@ export function list(_req, res, next) {
  *        "id": 1,
  *        "subject": "New from the Teachers College Archives",
  *        "html": "<h2>Email template here with a user specific variable like ${ firstname } of ${ lastname }</h2>"
+ *        "to_user_emails": null,
  *        "to_user_uids": null,
  *        "cc_user_uids": null,
  *        "bcc_user_uids": null,
@@ -149,6 +151,7 @@ export function messages(_req, res, next) {
  * @apiParam {Number} id The id of Email that you want to update
  * @apiParam (Body) {String} [subject] Email subject.
  * @apiParam (Body) {String} [html] Email HTML.
+ * @apiParam (Body) {String} [to_user_emails] String of comma separated email IDs
  * @apiParam (Body) {String} [to_user_uids] String of comma separated user UIDs
  * @apiParam (Body) {String} [cc_user_uids] String of comma separated user UIDs
  * @apiParam (Body) {String} [bcc_user_uids] String of comma separated user UIDs
@@ -163,6 +166,7 @@ export function messages(_req, res, next) {
  *        "id": 1,
  *        "subject": "New from the Teachers College Archives",
  *        "html": "<h2>Email template here with a user specific variable like ${ firstname } of ${ lastname }</h2>"
+ *        "to_user_emails": null,
  *        "to_user_uids": null,
  *        "cc_user_uids": null,
  *        "bcc_user_uids": null,
@@ -176,7 +180,7 @@ export function messages(_req, res, next) {
 export function update(_req, res, next) {
   const { id = null } = res.locals
   let { scheduled_at = null, subscription_list_id = null,
-    to_user_uids = null } = res.locals
+    to_user_uids = null, to_user_emails = null } = res.locals
   if (scheduled_at && new Date(scheduled_at) < new Date()) {
     return next(Response.Invalid('Scheduled time earlier than now'))
   }
@@ -191,8 +195,9 @@ export function update(_req, res, next) {
       if (!scheduled_at) { scheduled_at = email.scheduled_at }
       if (!subscription_list_id) { subscription_list_id = email.subscription_list_id }
       if (!to_user_uids) { to_user_uids = email.to_user_uids }
-      if ((subscription_list_id && to_user_uids) || (!subscription_list_id && !to_user_uids)) {
-        throw new Error('Require (only) one of `to_user_uids` and `subscription_list_id` fields')
+      if (!to_user_emails) { to_user_emails = email.to_user_emails }
+      if ([subscription_list_id, to_user_uids, to_user_emails].filter(o => o !== null).length !== 1) {
+        return next('Require (only) one of `to_user_uids`, `to_user_emails` and `subscription_list_id` fields')
       }
       if (subscription_list_id && !scheduled_at) {
         return next(Response.Invalid('Require scheduling time when sending to a subscription list'))
@@ -219,6 +224,7 @@ export function update(_req, res, next) {
  *
  * @apiParam (Body) {String} subject Email subject.
  * @apiParam (Body) {String} html Email HTML.
+ * @apiParam (Body) {String} [to_user_emails] String of comma separated email IDs
  * @apiParam (Body) {String} [to_user_uids] String of comma separated user UIDs
  * @apiParam (Body) {String} [cc_user_uids] String of comma separated user UIDs
  * @apiParam (Body) {String} [bcc_user_uids] String of comma separated user UIDs
@@ -233,6 +239,7 @@ export function update(_req, res, next) {
  *        "id": 1,
  *        "subject": "New from the Teachers College Archives",
  *        "html": "<h2>Email template here with a user specific variable like ${ firstname } of ${ lastname }</h2>"
+ *        "to_user_emails": null,
  *        "to_user_uids": null,
  *        "cc_user_uids": null,
  *        "bcc_user_uids": null,
@@ -244,15 +251,13 @@ export function update(_req, res, next) {
  *      }
  */
 export function create(_req, res, next) {
-  const { scheduled_at = null, subscription_list_id = null, to_user_uids = null } = res.locals
+  const { scheduled_at = null, subscription_list_id = null,
+    to_user_uids = null, to_user_emails = null } = res.locals
   if (scheduled_at && new Date(scheduled_at) < new Date()) {
     return next(Response.Invalid('Scheduled time earlier than now'))
   }
-  if (subscription_list_id && to_user_uids) {
-    return next(Response.Invalid('Require only one of `to_user_uids` and `subscription_list_id` fields'))
-  }
-  if (!subscription_list_id && !to_user_uids) {
-    return next(Response.Invalid('Require at least one of `to_user_uids` and `subscription_list_id` fields'))
+  if ([subscription_list_id, to_user_uids, to_user_emails].filter(o => o).length !== 1) {
+    return next('Require (only) one of `to_user_uids`, `to_user_emails` and `subscription_list_id` fields')
   }
   if (subscription_list_id && !scheduled_at) {
     return next(Response.Invalid('Require scheduling time when sending to a subscription list'))

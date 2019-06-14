@@ -4,7 +4,8 @@ import app from '../server/app'
 import moment from 'moment'
 
 describe('Email APIs', function () {
-  let email1, email2, email3, awsTestUserIds
+  let email1, email2, email3, email4, awsTestUserIds
+  const awsTestUserEmails = ['success@simulator.amazonses.com', 'bounce@simulator.amazonses.com']
   const messageIds = []
 
   var nextHour = moment().add(1, 'hour').startOf('hour');
@@ -145,6 +146,30 @@ describe('Email APIs', function () {
       })
   })
 
+  it('should schedule a new email with array string of email IDs', function (done) {
+    request(app)
+      .post('/emails')
+      .send({
+        subject: 'Test email 2 - {firstname}',
+        html: '<h2>test template</h2> <strong>html</strong> with {firstname} and {lastname}',
+        from_email_id: 1,
+        to_user_emails: awsTestUserEmails.join(),
+        scheduled_at: nextHour,
+      })
+      .expect(201)
+      .end((err, res) => {
+        expect(err).to.be.null
+        expect(res.body).to.be.a('object')
+        res.body.should.has.property('id')
+        res.body.should.has.property('subject')
+        res.body.should.has.property('html')
+        res.body.should.has.property('to_user_emails')
+        res.body.should.has.property('scheduled_at')
+        res.body.should.has.property('from_email_id')
+        done()
+      })
+  })
+
   it('should list all existing emails', function (done) {
     request(app)
       .get('/emails')
@@ -215,6 +240,45 @@ describe('Email APIs', function () {
         const check = () => {
           request(app)
             .get(`/emails/${ email3.id }`)
+            .expect(200)
+            .end((err, res) => {
+              expect(err).to.be.null
+              if (res.body.completed_at) {
+                done()
+              } else {
+                setTimeout(function () {
+                  check()
+                }, 300)
+              }
+            })
+        }
+        check()
+      })
+  })
+
+  it('should send a new email with array string of email IDs', function (done) {
+    this.timeout(10000)
+    request(app)
+      .post('/emails')
+      .send({
+        subject: 'Test email 3',
+        html: '<h2>test template</h2> <strong>html</strong>',
+        from_email_id: 1,
+        to_user_emails: awsTestUserEmails.join(),
+      })
+      .expect(201)
+      .end((err, res) => {
+        expect(err).to.be.null
+        expect(res.body).to.be.a('object')
+        res.body.should.has.property('id')
+        res.body.should.has.property('subject')
+        res.body.should.has.property('html')
+        res.body.should.has.property('from_email_id')
+        res.body.should.has.property('to_user_emails')
+        email4 = res.body
+        const check = () => {
+          request(app)
+            .get(`/emails/${ email4.id }`)
             .expect(200)
             .end((err, res) => {
               expect(err).to.be.null

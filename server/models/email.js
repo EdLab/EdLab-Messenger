@@ -14,6 +14,10 @@ export default function (sequelize, DataTypes) {
       type: DataTypes.TEXT('long'),
       allowNull: false,
     },
+    to_user_emails: {
+      type: DataTypes.TEXT('long'),
+      allowNull: true,
+    },
     to_user_uids: {
       type: DataTypes.TEXT('long'),
       allowNull: true,
@@ -39,7 +43,7 @@ export default function (sequelize, DataTypes) {
     hooks: {
       afterCreate(email) {
         if (!email.scheduled_at) {
-          `Email (id: ${ email.id }) sending starting at ${ moment() }`
+          Logger.debug(`Email (id: ${ email.id }) sending starting at ${ moment() }`)
           email.send()
         }
       },
@@ -103,16 +107,17 @@ export default function (sequelize, DataTypes) {
       if (this.completed_at) {
         return reject(`Email with id: ${ this.id } completed at ${ this.completed_at }`)
       }
-      let to_users, cc_emails, bcc_emails, from_email_address
+      let to_users, to_emails, cc_emails, bcc_emails, from_email_address, length
       let sleepTime, startTime, sendRate
       let timeDiff = 0
       let noSuccess = 0
       let noFailed = 0
       const sendMessages = () => {
-        if ((noSuccess + noFailed) % 100 === 0) {
-          Logger.debug(`Success: ${ noSuccess }, Failure: ${ noFailed } / ${ to_users.length } messages in ${ timeDiff } seconds`)
+        const idx  = noSuccess + noFailed
+        if (idx % 100 === 0) {
+          Logger.debug(`Success: ${ noSuccess }, Failure: ${ noFailed } / ${ length } messages in ${ timeDiff } seconds`)
         }
-        if (noSuccess + noFailed === to_users.length) {
+        if (idx === length) {
           const completed_at = moment()
           this.update({ completed_at: completed_at })
           Logger.debug(
@@ -124,12 +129,11 @@ export default function (sequelize, DataTypes) {
           return resolve()
         }
         return Message
-          .send(this, to_users[noSuccess + noFailed], from_email_address, cc_emails, bcc_emails)
+          .send(this, to_users[idx] || to_emails[idx], from_email_address, cc_emails, bcc_emails)
           .then(() => {
             noSuccess++
-            const noSent = noSuccess + noFailed
             timeDiff = moment().diff(startTime, 'seconds')
-            if ((noSent) / timeDiff >= sendRate) {
+            if ((idx) / timeDiff >= sendRate) {
               return new Promise(() => {
                 setTimeout(() => {
                   return sendMessages()
@@ -138,12 +142,11 @@ export default function (sequelize, DataTypes) {
             } else { return sendMessages() }
           })
           .catch(error => {
-            const to_user = to_users[noSuccess + noFailed]
+            const to_user = to_users[idx]
             Logger.error(`Message sending failed: ${ error }; user uid: ${ to_user.uid }; email id: ${ to_user.email }`)
             noFailed++
-            const noSent = noSuccess + noFailed
             timeDiff = moment().diff(startTime, 'seconds')
-            if ((noSent) / timeDiff >= sendRate) {
+            if ((idx) / timeDiff >= sendRate) {
               return new Promise(() => {
                 setTimeout(() => {
                   return sendMessages()
@@ -155,7 +158,7 @@ export default function (sequelize, DataTypes) {
       return Email
         .findByPk(this.id, {
           attributes: [
-            'id', 'subject', 'html', 'to_user_uids', 'cc_user_uids', 'bcc_user_uids',
+            'id', 'subject', 'html', 'to_user_emails', 'to_user_uids', 'cc_user_uids', 'bcc_user_uids',
             'subscription_list_id', 'from_email_id',
           ],
           include: [
@@ -177,12 +180,17 @@ export default function (sequelize, DataTypes) {
         })
         .then(email => {
           from_email_address = email.from_email.getEmailAddress()
-          let to_user_uids
-          if (email.to_user_uids) {
+          let to_user_uids = []
+          if (email.to_user_emails) {
+            to_emails = email.to_user_emails.split(',')
+            length = to_emails.length
+          } else if (email.to_user_uids) {
             to_user_uids = email.to_user_uids.split(',')
+            length = to_user_uids.length
           } else {
             const subscriptions = email.subscription_list.subscriptions
             to_user_uids = subscriptions.map(s => s.user_uid)
+            length = to_user_uids.length
           }
           const cc_user_uids = email.cc_user_uids ? email.cc_user_uids.split(',') : []
           const bcc_user_uids = email.bcc_user_uids ? email.bcc_user_uids.split(',') : []
@@ -218,7 +226,7 @@ export default function (sequelize, DataTypes) {
         })
         .then(data => {
           sendRate = data.MaxSendRate
-          sleepTime = to_users.length / sendRate
+          sleepTime = length / sendRate
           startTime = moment()
           Logger.debug(`Send rate: ${ sendRate }; Sleep time: ${ sleepTime }`)
           return sendMessages()
@@ -226,6 +234,5 @@ export default function (sequelize, DataTypes) {
         .catch(error => Logger.error(error))
     })
   }
-
   return Email
 }

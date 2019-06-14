@@ -13,7 +13,9 @@ export default function (sequelize, DataTypes) {
     },
     to_user_uid: {
       type: DataTypes.STRING(128),
-      allowNull: false,
+    },
+    to_user_email: {
+      type: DataTypes.STRING(128),
     },
   }, {
     underscored: true,
@@ -30,18 +32,31 @@ export default function (sequelize, DataTypes) {
   }
 
   Message.send = (email, to_user, from_email_address, cc_emails = [], bcc_emails = []) => {
-    const user = to_user.get({ plain: true })
-    if (email.subscription_list_id) {
-      user.unsubscribeLink = to_user.getUnsubscribeLink(email.subscription_list_id)
+    let html, subject, to_email
+    const message = {
+      email_id: email.id,
     }
-    const html = format(email.html, user)
-    const subject = format(email.subject, user)
+    if (to_user instanceof User) {
+      const user = to_user.get({ plain: true })
+      if (email.subscription_list_id) {
+        user.unsubscribeLink = to_user.getUnsubscribeLink(email.subscription_list_id)
+      }
+      html = format(email.html, user)
+      subject = format(email.subject, user)
+      to_email = to_user.getEmailAddress()
+      message.to_user_uid = to_user.uid
+    } else {
+      html = email.html
+      subject = email.subject
+      to_email = to_user
+      message.to_user_email = to_email
+    }
     return ses
       .sendEmail({
         Destination: {
           BccAddresses: bcc_emails,
           CcAddresses: cc_emails,
-          ToAddresses: [to_user.getEmailAddress()],
+          ToAddresses: [to_email],
         },
         Message: {
           Subject: { Data: subject },
@@ -55,16 +70,16 @@ export default function (sequelize, DataTypes) {
       })
       .promise()
       .then(data => {
+        message.ses_id = data.MessageId
         Message
-          .create({
-            email_id: email.id,
-            to_user_uid: to_user.uid,
-            ses_id: data.MessageId,
-          })
+          .create(message)
           .catch(error => {
             Logger.error(`Saving sent message failed: ${ error }`)
           })
         return Promise.resolve()
+      })
+      .catch(error => {
+        Logger.error(`Message sending failed: ${ error }`)
       })
   }
 

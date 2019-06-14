@@ -25,6 +25,7 @@ const configs = {
     ACCOUNTS_DB: 'sso',
   },
   production: {
+    ENABLE_DOC: true,
     ENABLE_CRON: true,
     AWS_CONFIG: {
       AWS_REGION: 'us-east-1',

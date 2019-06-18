@@ -218,7 +218,6 @@ describe('Email APIs', function () {
   })
 
   it('should send a new email with array string of users', function (done) {
-    this.timeout(10000)
     request(app)
       .post('/emails')
       .send({
@@ -257,7 +256,6 @@ describe('Email APIs', function () {
   })
 
   it('should send a new email with array string of email IDs', function (done) {
-    this.timeout(10000)
     request(app)
       .post('/emails')
       .send({

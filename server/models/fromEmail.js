@@ -28,14 +28,13 @@ export default function (sequelize, DataTypes) {
   }
 
   FromEmail.isVerified = emailId => {
+    const domain = emailId.split('@')[1]
     return ses
-      .listIdentities({
-        IdentityType: 'EmailAddress',
-      })
+      .listIdentities()
       .promise()
       .then(data => {
         const identitities = data.Identities
-        if (identitities.indexOf(emailId) === -1) {
+        if (identitities.indexOf(emailId) === -1 && identitities.indexOf(domain) === -1) {
           return Promise.resolve(false)
         }
         return Promise.resolve(true)

@@ -5,7 +5,7 @@ const configs = {
     LOG_LEVEL: 'debug',
   },
   development: {
-    HOST_URL: 'https://dev-***REMOVED***2.tc-***REMOVED***.org/',
+    HOST_URL: 'https://dev-messenger2.tc-library.org/',
   },
   test: {
     LOG_LEVEL: 'fatal',
@@ -13,10 +13,10 @@ const configs = {
     HOST_URL: 'http://localhost:8000/',
   },
   integration: {
-    HOST_URL: 'https://***REMOVED***2.tc-***REMOVED***.org/',
+    HOST_URL: 'https://messenger2.tc-library.org/',
   },
   production: {
-    HOST_URL: 'https://***REMOVED***2.tc-***REMOVED***.org/',
+    HOST_URL: 'https://messenger2.tc-library.org/',
   },
 }
 

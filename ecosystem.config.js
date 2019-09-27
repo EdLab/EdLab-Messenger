@@ -1,7 +1,7 @@
 module.exports = {
   apps: [
     {
-      name: '***REMOVED***-dev',
+      name: 'messenger-dev',
       node_args: '--max-old-space-size=2048',
       script: 'server/index.js',
       watch: true,
@@ -16,14 +16,14 @@ module.exports = {
         BLUEBIRD_WARNINGS: 0,
       },
     }, {
-      name: '***REMOVED***-int',
+      name: 'messenger-int',
       node_args: '--max-old-space-size=2048',
       script: 'dist/index.js',
       env: {
         NODE_ENV: 'integration',
       },
     }, {
-      name: '***REMOVED***-prod',
+      name: 'messenger-prod',
       node_args: '--max-old-space-size=2048',
       source_map_support: false,
       max_memory_restart: '4G',

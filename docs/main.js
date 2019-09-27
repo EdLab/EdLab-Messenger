@@ -560,17 +560,17 @@ require([
     function changeVersionCompareTo(e) {
         e.preventDefault();
 
-        var $***REMOVED*** = $(this).parents('article');
+        var $root = $(this).parents('article');
         var selectedVersion = $(this).html();
-        var $button = $***REMOVED***.find('.version');
+        var $button = $root.find('.version');
         var currentVersion = $button.find('strong').html();
         $button.find('strong').html(selectedVersion);
 
-        var group = $***REMOVED***.data('group');
-        var name = $***REMOVED***.data('name');
-        var version = $***REMOVED***.data('version');
+        var group = $root.data('group');
+        var name = $root.data('name');
+        var version = $root.data('version');
 
-        var compareVersion = $***REMOVED***.data('compare-version');
+        var compareVersion = $root.data('compare-version');
 
         if (compareVersion === selectedVersion)
             return;
@@ -634,8 +634,8 @@ require([
                 fields._hasTypeInInfoFields = _hasTypeInFields(entry.info.fields);
 
             var content = templateCompareArticle(fields);
-            $***REMOVED***.after(content);
-            var $content = $***REMOVED***.next();
+            $root.after(content);
+            var $content = $root.next();
 
             // Event on.click re-assign
             $content.find('.versions li.version a').on('click', changeVersionCompareTo);
@@ -643,7 +643,7 @@ require([
             // select navigation
             $('#sidenav li[data-group=\'' + group + '\'][data-name=\'' + name + '\'][data-version=\'' + currentVersion + '\']').addClass('has-modifications');
 
-            $***REMOVED***.remove();
+            $root.remove();
             // TODO: on change main version or select the highest version re-render
         }
 
@@ -656,8 +656,8 @@ require([
     function changeAllVersionCompareTo(e) {
         e.preventDefault();
         $('article:visible .versions').each(function(){
-            var $***REMOVED*** = $(this).parents('article');
-            var currentVersion = $***REMOVED***.data('version');
+            var $root = $(this).parents('article');
+            var currentVersion = $root.data('version');
             var $foundElement = null;
             $(this).find('li.version a').each(function() {
                 var selectVersion = $(this).html();
@@ -763,18 +763,18 @@ require([
      * Render original Article and remove the current visible Article.
      */
     function resetArticle(group, name, version) {
-        var $***REMOVED*** = $('article[data-group=\'' + group + '\'][data-name=\'' + name + '\']:visible');
+        var $root = $('article[data-group=\'' + group + '\'][data-name=\'' + name + '\']:visible');
         var content = renderArticle(group, name, version);
 
-        $***REMOVED***.after(content);
-        var $content = $***REMOVED***.next();
+        $root.after(content);
+        var $content = $root.next();
 
         // Event on.click muss neu zugewiesen werden (sollte eigentlich mit on automatisch funktionieren... sollte)
         $content.find('.versions li.version a').on('click', changeVersionCompareTo);
 
         $('#sidenav li[data-group=\'' + group + '\'][data-name=\'' + name + '\'][data-version=\'' + version + '\']').removeClass('has-modifications');
 
-        $***REMOVED***.remove();
+        $root.remove();
         return;
     }
 

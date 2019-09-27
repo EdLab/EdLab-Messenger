@@ -42,7 +42,7 @@ app.use(cors({
   origin: [
     AppConfig.ALLOW_ORIGIN,
     /\.tc\.columbia\.edu$/,
-    /\.tc-***REMOVED***\.org$/,
+    /\.tc-library\.org$/,
   ],
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Origin'],

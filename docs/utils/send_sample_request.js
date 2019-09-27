@@ -8,10 +8,10 @@ define([
       $(".sample-request-send").off("click");
       $(".sample-request-send").on("click", function(e) {
           e.preventDefault();
-          var $***REMOVED*** = $(this).parents("article");
-          var group = $***REMOVED***.data("group");
-          var name = $***REMOVED***.data("name");
-          var version = $***REMOVED***.data("version");
+          var $root = $(this).parents("article");
+          var group = $root.data("group");
+          var name = $root.data("name");
+          var version = $root.data("version");
           sendSampleRequest(group, name, version, $(this).data("sample-request-type"));
       });
 
@@ -19,23 +19,23 @@ define([
       $(".sample-request-clear").off("click");
       $(".sample-request-clear").on("click", function(e) {
           e.preventDefault();
-          var $***REMOVED*** = $(this).parents("article");
-          var group = $***REMOVED***.data("group");
-          var name = $***REMOVED***.data("name");
-          var version = $***REMOVED***.data("version");
+          var $root = $(this).parents("article");
+          var group = $root.data("group");
+          var name = $root.data("name");
+          var version = $root.data("version");
           clearSampleRequest(group, name, version);
       });
   }; // initDynamic
 
   function sendSampleRequest(group, name, version, type)
   {
-      var $***REMOVED*** = $('article[data-group="' + group + '"][data-name="' + name + '"][data-version="' + version + '"]');
+      var $root = $('article[data-group="' + group + '"][data-name="' + name + '"][data-version="' + version + '"]');
 
       // Optional header
       var header = {};
-      $***REMOVED***.find(".sample-request-header:checked").each(function(i, element) {
+      $root.find(".sample-request-header:checked").each(function(i, element) {
           var group = $(element).data("sample-request-header-group-id");
-          $***REMOVED***.find("[data-sample-request-header-group=\"" + group + "\"]").each(function(i, element) {
+          $root.find("[data-sample-request-header-group=\"" + group + "\"]").each(function(i, element) {
             var key = $(element).data("sample-request-header-name");
             var value = element.value;
             if ( ! element.optional && element.defaultValue !== '') {
@@ -48,9 +48,9 @@ define([
       // create JSON dictionary of parameters
       var param = {};
       var paramType = {};
-      $***REMOVED***.find(".sample-request-param:checked").each(function(i, element) {
+      $root.find(".sample-request-param:checked").each(function(i, element) {
           var group = $(element).data("sample-request-param-group-id");
-          $***REMOVED***.find("[data-sample-request-param-group=\"" + group + "\"]").not(function(){
+          $root.find("[data-sample-request-param-group=\"" + group + "\"]").not(function(){
             return $(this).val() == "" && $(this).is("[data-sample-request-param-optional='true']");
           }).each(function(i, element) {
             var key = $(element).data("sample-request-param-name");
@@ -64,7 +64,7 @@ define([
       });
 
       // grab user-inputted URL
-      var url = $***REMOVED***.find(".sample-request-url").val();
+      var url = $root.find(".sample-request-url").val();
 
       // Insert url parameter
       var pattern = pathToRegexp(url, null);
@@ -79,8 +79,8 @@ define([
           }
       } // for
 
-      $***REMOVED***.find(".sample-request-response").fadeTo(250, 1);
-      $***REMOVED***.find(".sample-request-response-json").html("Loading...");
+      $root.find(".sample-request-response").fadeTo(250, 1);
+      $root.find(".sample-request-response-json").html("Loading...");
       refreshScrollSpy();
 
       _.each( param, function( val, key ) {
@@ -114,7 +114,7 @@ define([
           } catch (e) {
               jsonResponse = data;
           }
-          $***REMOVED***.find(".sample-request-response-json").html(jsonResponse);
+          $root.find(".sample-request-response-json").html(jsonResponse);
           refreshScrollSpy();
       };
 
@@ -132,30 +132,30 @@ define([
               message += "<br>" + jsonResponse;
 
           // flicker on previous error to make clear that there is a new response
-          if($***REMOVED***.find(".sample-request-response").is(":visible"))
-              $***REMOVED***.find(".sample-request-response").fadeTo(1, 0.1);
+          if($root.find(".sample-request-response").is(":visible"))
+              $root.find(".sample-request-response").fadeTo(1, 0.1);
 
-          $***REMOVED***.find(".sample-request-response").fadeTo(250, 1);
-          $***REMOVED***.find(".sample-request-response-json").html(message);
+          $root.find(".sample-request-response").fadeTo(250, 1);
+          $root.find(".sample-request-response-json").html(message);
           refreshScrollSpy();
       };
   }
 
   function clearSampleRequest(group, name, version)
   {
-      var $***REMOVED*** = $('article[data-group="' + group + '"][data-name="' + name + '"][data-version="' + version + '"]');
+      var $root = $('article[data-group="' + group + '"][data-name="' + name + '"][data-version="' + version + '"]');
 
       // hide sample response
-      $***REMOVED***.find(".sample-request-response-json").html("");
-      $***REMOVED***.find(".sample-request-response").hide();
+      $root.find(".sample-request-response-json").html("");
+      $root.find(".sample-request-response").hide();
 
       // reset value of parameters
-      $***REMOVED***.find(".sample-request-param").each(function(i, element) {
+      $root.find(".sample-request-param").each(function(i, element) {
           element.value = "";
       });
 
       // restore default URL
-      var $urlElement = $***REMOVED***.find(".sample-request-url");
+      var $urlElement = $root.find(".sample-request-url");
       $urlElement.val($urlElement.prop("defaultValue"));
 
       refreshScrollSpy();

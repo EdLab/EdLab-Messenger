@@ -14,7 +14,7 @@ const FROM_EMAIL_FIELDS = ['id', 'sender', 'email']
  *        {
  *          id: 1,
  *          sender: "TC Library",
- *          email: "***REMOVED***@tc.columbia.edu"
+ *          email: "library@tc.columbia.edu"
  *        },
  *      ]
  *    }
@@ -47,7 +47,7 @@ export function list(_req, res, next) {
  *      {
  *        id: 1,
  *        sender: "TC Library",
- *        email: "***REMOVED***@tc.columbia.edu"
+ *        email: "library@tc.columbia.edu"
  *      }
  */
 export function update(_req, res, next) {
@@ -82,7 +82,7 @@ export function update(_req, res, next) {
  *      {
  *        id: 1,
  *        sender: "TC Library",
- *        email: "***REMOVED***@tc.columbia.edu"
+ *        email: "library@tc.columbia.edu"
  *      }
  */
 export function create(_req, res, next) {

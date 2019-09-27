@@ -7,11 +7,11 @@
 
 ## Production
 
-- URL: `http://***REMOVED***2.tc-***REMOVED***.org`
+- URL: `http://messenger2.tc-library.org`
 - Authorization: `Basic ZWRsYWJhZG1pbjpEdjJAeEI5ZDh6`
 
 ## API Documentation
 
-- URL: `http://***REMOVED***2.tc-***REMOVED***.org/docs`
+- URL: `http://messenger2.tc-library.org/docs`
 - Username: `***REMOVED***`
 - Password: `***REMOVED***`

@@ -29,10 +29,10 @@ const configs = {
     ENABLE_CRON: true,
     AWS_CONFIG: {
       AWS_REGION: 'us-east-1',
-      EMAIL_SENDER: 'TC Library Archive <***REMOVED***@tc.columbia.edu>',
+      EMAIL_SENDER: 'TC Library Archive <library@tc.columbia.edu>',
     },
-    SES_CONFIGURATION_SET: '***REMOVED***',
-    SQS_QUEUE_URL: '***REMOVED***/***REMOVED***',
+    SES_CONFIGURATION_SET: 'messenger',
+    SQS_QUEUE_URL: '***REMOVED***',
     ACCOUNTS_DB: 'accounts',
     UNSUBSCRIBE_SECRET: '***REMOVED***',
   },

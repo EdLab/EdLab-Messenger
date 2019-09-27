@@ -1,34 +1,34 @@
 {
   "development": {
-    "username": "***REMOVED***",
+    "username": "library",
     "password": "***REMOVED***",
     "database": "***REMOVED***",
     "host": "***REMOVED***",
     "dialect": "mysql"
   },
   "test": {
-    "username": "***REMOVED***",
+    "username": "library",
     "password": "***REMOVED***",
     "database": "***REMOVED***",
     "host": "***REMOVED***",
     "dialect": "mysql"
   },
   "integration": {
-    "username": "***REMOVED***",
+    "username": "library",
     "password": "***REMOVED***",
     "database": "***REMOVED***",
     "host": "***REMOVED***",
     "dialect": "mysql"
   },
   "production": {
-    "username": "***REMOVED***",
+    "username": "root",
     "password": "***REMOVED***",
-    "database": "***REMOVED***",
-    "host": "edlab-***REMOVED***.***REMOVED***",
+    "database": "messenger",
+    "host": "***REMOVED***",
     "dialect": "mysql"
   },
   "accounts": {
-    "username": "***REMOVED***-2",
+    "username": "messenger-2",
     "password": "***REMOVED***",
     "database": "***REMOVED***",
     "host": "***REMOVED***.***REMOVED***",

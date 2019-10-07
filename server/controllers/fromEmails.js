@@ -108,6 +108,32 @@ export function create(_req, res, next) {
 }
 
 /**
+ * @api {GET} /from_emails/:id Retrieve an Email Sender
+ * @apiName getFromEmail
+ * @apiGroup FromEmails
+ *
+ * @apiParam {Number} id Email sender ID
+ *
+ * @apiSuccess {Object} Response FromEmails object.
+ * @apiSuccessExample {json} Success-Response:
+ *     HTTP/1.1 200 OK
+ *    {
+ *        id: 1,
+ *        sender: "TC Library",
+ *        email: "library@tc.columbia.edu"
+ *      }
+ */
+export function retrieve(_req, res, next) {
+  const { id = null } = res.locals
+  FromEmail
+    .findByPk(id, {
+      attributes: FROM_EMAIL_FIELDS,
+    })
+    .then(fromEmail => res.json(fromEmail))
+    .catch(e => next(e))
+}
+
+/**
  * @api {DELETE} /from_emails/:id Delete an Email sender
  * @apiName destroyFromEmail
  * @apiGroup FromEmails

@@ -8,7 +8,7 @@ const { getController } = Utility
 router.use(urlencoded({ extended: false }))
 
 router.get(['', '/version'], (_req, res) => {
-  res.json({version: AppConfig.appVersion})
+  res.json({ version: AppConfig.appVersion })
 })
 
 router.use('/templates',
@@ -111,6 +111,11 @@ router.use('/from_emails',
       '/',
       getParam('p', { parser: 'integer' }),
       getController('fromEmails').list
+    )
+    emailIdRouter.get(
+      '/:id',
+      getParam('id', { parser: 'integer' }),
+      getController('fromEmails').retrieve
     )
     emailIdRouter.post(
       '/',

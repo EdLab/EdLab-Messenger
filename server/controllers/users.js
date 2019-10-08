@@ -42,7 +42,7 @@ export function list(_req, res, next) {
 }
 
 /**
- * @api {GET} /users/:uid/subscriptions Get list of Subscriptions of a subscription list
+ * @api {GET} /users/:uid/subscriptions Get list of Subscriptions of a user belongs to
  * @apiName getUserSubscriptions
  * @apiGroup Users
  *

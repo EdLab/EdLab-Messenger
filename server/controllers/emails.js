@@ -130,7 +130,7 @@ export function messages(_req, res, next) {
           limit: AppConfig.PAGINATION_LIMIT,
           offset: AppConfig.PAGINATION_LIMIT * Math.max(0, p - 1),
           attributes: MESSAGE_FIELDS,
-          include: [ { model: StatusLog } ],
+          include: [{ model: StatusLog }],
         })
     })
     .then(result => {
@@ -212,7 +212,9 @@ export function update(_req, res, next) {
       })
       return email.save()
     })
-    .then(email => email.reload())
+    .then(email => {
+      email.reload()
+    })
     .then(email => res.status(201).send(email))
     .catch(e => next(e))
 }
@@ -257,7 +259,7 @@ export function create(_req, res, next) {
     return next(Response.Invalid('Scheduled time earlier than now'))
   }
   if ([subscription_list_id, to_user_uids, to_user_emails].filter(o => o).length !== 1) {
-    return next('Require (only) one of `to_user_uids`, `to_user_emails` and `subscription_list_id` fields')
+    return next(Response.Invalid('Require (only) one of `to_user_uids`, `to_user_emails` and `subscription_list_id` fields'))
   }
   if (subscription_list_id && !scheduled_at) {
     return next(Response.Invalid('Require scheduling time when sending to a subscription list'))

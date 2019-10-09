@@ -5,11 +5,17 @@ import getParam from 'express-get-param'
 
 const { getController } = Utility
 
+import basicAuth from 'express-basic-auth'
+
 router.use(urlencoded({ extended: false }))
 
 router.get(['', '/version'], (_req, res) => {
   res.json({ version: AppConfig.appVersion })
 })
+
+router.use(basicAuth({
+  users: AppConfig.BASIC_AUTH_USERS,
+}))
 
 router.use('/templates',
   ((templateRouter = Router()) => {

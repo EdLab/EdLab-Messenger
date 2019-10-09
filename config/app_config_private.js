@@ -12,6 +12,8 @@ const {
   ACCOUNTS_DB_PASSWORD,
   ACCOUNTS_DB_DATABASE,
   ACCOUNTS_DB_HOST,
+  BASIC_AUTH_USER,
+  BASIC_AUTH_PWD,
 } = process.env
 
 const configs = {
@@ -39,6 +41,9 @@ const configs = {
       database: ACCOUNTS_DB_DATABASE,
       host: ACCOUNTS_DB_HOST,
       dialect: 'mysql',
+    },
+    BASIC_AUTH_USERS: {
+      [BASIC_AUTH_USER]: BASIC_AUTH_PWD,
     },
     ENABLE_DOC: true,
   },

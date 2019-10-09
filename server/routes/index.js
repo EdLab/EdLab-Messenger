@@ -175,7 +175,7 @@ router.use('/subscription_lists',
       getController('subscriptionLists').addSubscription
     )
     subscriptionListRouter.delete(
-      '/:id/subscriptions',
+      '/:id/subscriptions/:user_uid',
       getParam('id', { parser: 'integer' }),
       getParam('user_uid', { parser: 'string' }),
       getController('subscriptionLists').removeSubscription

@@ -1,3 +1,5 @@
+const { WEB_CONCURRENCY = 1, WEB_MEMORY = 512 } = process.env
+
 module.exports = {
   apps: [
     {
@@ -16,25 +18,18 @@ module.exports = {
         BLUEBIRD_WARNINGS: 0,
       },
     }, {
-      name: 'messenger-int',
-      node_args: '--max-old-space-size=2048',
-      script: 'dist/index.js',
-      env: {
-        NODE_ENV: 'integration',
-      },
-    }, {
-      name: 'messenger-prod',
-      node_args: '--max-old-space-size=2048',
+      name: 'app',
       source_map_support: false,
-      max_memory_restart: '4G',
       script: 'dist/index.js',
       vizion: false,
+      max_memory_restart: `${WEB_MEMORY}M`,
       env: {
         NODE_ENV: 'production',
         BLUEBIRD_WARNINGS: 0,
         PORT: 8000,
       },
-      exec_mode: 'fork_mode',
+      exec_mode: 'cluster',
+      instances: WEB_CONCURRENCY,
     },
-  ]
+  ],
 }

@@ -6,10 +6,8 @@
   "scripts": {
     "debug": "node --inspect --trace-warnings --trace-deprecation server",
     "dev": "pm2 start ecosystem.config.js --only messenger-dev --no-daemon",
-    "int": "pm2-docker start ecosystem.config.js --only messenger-int",
-    "prod": "pm2-docker start ecosystem.config.js --only messenger-prod",
     "build": "npx babel server/ --copy-files -d dist",
-    "start:docker": "pm2-docker start ecosystem.config.js --only app-prod",
+    "start": "pm2-runtime start ecosystem.config.js --only app",
     "migrate": "sequelize --config config/DatabaseConfig.json db:migrate",
     "seed": "sequelize --config config/DatabaseConfig.json db:seed:all",
     "unseed": "sequelize --config config/DatabaseConfig.json db:seed:undo:all",

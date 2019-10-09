@@ -8,14 +8,14 @@ import { json } from 'body-parser'
 const env = process.env.NODE_ENV || 'development'
 
 require('dotenv-safe').config()
-const publicConfig = require('../../config/app_config')
-const privateConfig = require('../../config/app_config_private')
+const publicConfig = require('../config/app_config')
+const privateConfig = require('../config/app_config_private')
 const { version } = require('../package.json')
 
 global.AppConfig = Object.assign(
   {},
-  publicConfig(env),
-  privateConfig(env))
+  publicConfig.default(env),
+  privateConfig.default(env))
 
 // global.Constants = require('./config/constants')
 global.Logger = require('./lib/Logger').default('logs/events.log')

@@ -1,4 +1,4 @@
-const { WEB_CONCURRENCY = 1, WEB_MEMORY = 512 } = process.env
+const { WEB_CONCURRENCY = 1, WEB_MEMORY = 512, PORT = 8000 } = process.env
 
 module.exports = {
   apps: [
@@ -26,7 +26,7 @@ module.exports = {
       env: {
         NODE_ENV: 'production',
         BLUEBIRD_WARNINGS: 0,
-        PORT: 8000,
+        PORT: PORT,
       },
       exec_mode: 'cluster',
       instances: WEB_CONCURRENCY,

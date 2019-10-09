@@ -1,4 +1,3 @@
-import fs from 'fs'
 import Sequelize from 'sequelize'
 import { highlight } from 'cli-highlight'
 import { green, gray, yellow, magenta } from 'chalk'
@@ -12,9 +11,7 @@ export default function (DBConfig) {
       host: DBConfig.host,
       dialect: DBConfig.dialect,
       dialectOptions: {
-        ssl: {
-          ca: fs.readFileSync(__dirname + '/rds-combined-ca-bundle.pem'),
-        },
+        ssl: 'Amazon RDS',
       },
       define: {
         charset: 'utf8mb4',

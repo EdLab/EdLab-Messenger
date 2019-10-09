@@ -1,3 +1,4 @@
+import fs from 'fs'
 import Sequelize from 'sequelize'
 import { highlight } from 'cli-highlight'
 import { green, gray, yellow, magenta } from 'chalk'
@@ -9,8 +10,12 @@ export default function (DBConfig) {
     DBConfig.username,
     DBConfig.password, {
       host: DBConfig.host,
-      operatorsAliases: false,
       dialect: DBConfig.dialect,
+      dialectOptions: {
+        ssl: {
+          ca: fs.readFileSync(__dirname + '/rds-combined-ca-bundle.pem'),
+        },
+      },
       define: {
         charset: 'utf8mb4',
         collate: 'utf8mb4_general_ci',

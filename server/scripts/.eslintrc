@@ -1,0 +1,8 @@
+{
+    "rules": {
+        "no-console": ["error", {
+            "allow": ["dir", "log"]
+        }],
+        "no-undef": "warn"
+    }
+}

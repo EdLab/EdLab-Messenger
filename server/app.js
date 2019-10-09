@@ -7,16 +7,15 @@ import { json } from 'body-parser'
 
 const env = process.env.NODE_ENV || 'development'
 
-import publicConfig from '../config/app_config'
-import privateConfig from '../config/app_config_private'
-import { version } from '../jenkins.json'
-const localConfig = require('dotenv').config()
+require('dotenv-safe').config()
+const publicConfig = require('../../config/app_config')
+const privateConfig = require('../../config/app_config_private')
+const { version } = require('../package.json')
 
 global.AppConfig = Object.assign(
   {},
   publicConfig(env),
-  privateConfig(env),
-  localConfig.parsed)
+  privateConfig(env))
 
 // global.Constants = require('./config/constants')
 global.Logger = require('./lib/Logger').default('logs/events.log')
@@ -58,10 +57,6 @@ global.SequelizeInst = require('./lib/Database').default(AppConfig.DBCONFIG)
 global.AccountsSequelizeInst = require('./lib/Database').default(AppConfig.ACCOUNTS_DBCONFIG)
 Object.assign(global, require('./models').default)
 // SequelizeInst.sync()
-
-// Cron Tasks and Sitemap
-const CronTasks = require('./lib/Cron').start()
-Logger.info(`CronTasks: ${ CronTasks.length } tasks scheduled`)
 
 if (AppConfig.ENABLE_DOC) {
   app.use('/docs', express.static(join(__dirname, '..', 'docs')))

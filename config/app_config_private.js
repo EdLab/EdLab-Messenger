@@ -1,21 +1,48 @@
-import dbConfig from './DatabaseConfig.json'
+const {
+  AWS_REGION = 'us-east-1',
+  SES_CONFIGURATION_SET,
+  SQS_QUEUE_URL,
+  ACCOUNTS_DB,
+  UNSUBSCRIBE_SECRET,
+  DB_USERNAME,
+  DB_PASSWORD,
+  DB_DATABASE,
+  DB_HOST,
+  ACCOUNTS_DB_USERNAME,
+  ACCOUNTS_DB_PASSWORD,
+  ACCOUNTS_DB_DATABASE,
+  ACCOUNTS_DB_HOST,
+} = process.env
 
 const configs = {
   default: {
     AWS_CONFIG: {
-      AWS_REGION: 'us-east-1',
+      AWS_REGION: AWS_REGION,
       EMAIL_SENDER: 'EdLab IT <edlabit@tc.edu>',
     },
-    SES_CONFIGURATION_SET: '***REMOVED***',
-    SQS_QUEUE_URL: '***REMOVED***/***REMOVED***',
     PAGINATION_LIMIT: 12,
-    ENABLE_CRON: false,
-    ACCOUNTS_DB: 'sso',
-    UNSUBSCRIBE_SECRET: '***REMOVED***',
     UNSUBSCRIBE_ENCRYPTION: 'aes-256-ctr',
+    SES_CONFIGURATION_SET: SES_CONFIGURATION_SET,
+    SQS_QUEUE_URL: SQS_QUEUE_URL,
+    ACCOUNTS_DB: ACCOUNTS_DB,
+    UNSUBSCRIBE_SECRET: UNSUBSCRIBE_SECRET,
+    DBCONFIG: {
+      username: DB_USERNAME,
+      password: DB_PASSWORD,
+      database: DB_DATABASE,
+      host: DB_HOST,
+      dialect: 'mysql',
+    },
+    ACCOUNTS_DBCONFIG: {
+      username: ACCOUNTS_DB_USERNAME,
+      password: ACCOUNTS_DB_PASSWORD,
+      database: ACCOUNTS_DB_DATABASE,
+      host: ACCOUNTS_DB_HOST,
+      dialect: 'mysql',
+    },
+    ENABLE_DOC: true,
   },
   development: {
-    ENABLE_DOC: true,
     ACCOUNTS_DB: 'sso',
   },
   test: {
@@ -25,23 +52,12 @@ const configs = {
     ACCOUNTS_DB: 'sso',
   },
   production: {
-    ENABLE_DOC: true,
-    ENABLE_CRON: true,
     AWS_CONFIG: {
-      AWS_REGION: 'us-east-1',
-      EMAIL_SENDER: 'TC Library Archive <library@tc.columbia.edu>',
+      AWS_REGION: AWS_REGION,
+      EMAIL_SENDER: 'TC Library <library@tc.columbia.edu>',
     },
-    SES_CONFIGURATION_SET: 'messenger',
-    SQS_QUEUE_URL: '***REMOVED***',
-    ACCOUNTS_DB: 'accounts',
-    UNSUBSCRIBE_SECRET: '***REMOVED***',
   },
 }
 export default (env = process.env.NODE_ENV) => {
-  const dbConfigEnv = process.env.USE_DATABASE || env
-  const accountsDbConfig = configs[env].ACCOUNTS_DB
-  return Object.assign(configs['default'], configs[env], {
-    DBCONFIG: dbConfig[dbConfigEnv],
-    ACCOUNTS_DBCONFIG: dbConfig[accountsDbConfig],
-  })
+  return Object.assign(configs['default'], configs[env])
 }

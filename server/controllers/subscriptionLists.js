@@ -1,4 +1,4 @@
-const Op = SequelizeInst.Op
+const { Op } = require('sequelize')
 
 const SUBSCRIPTION_FIELDS = ['user_uid', 'subscription_list_id']
 const SUBSCRIPTION_LIST_FIELDS = ['id', 'name', 'description']

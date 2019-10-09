@@ -2,7 +2,7 @@ import AWS from '../lib/AWS.js'
 import moment from 'moment'
 
 const ses = new AWS.SES()
-const Op = SequelizeInst.Op
+const { Op } = require('sequelize')
 
 export default function (sequelize, DataTypes) {
   const Email = sequelize.define('email', {

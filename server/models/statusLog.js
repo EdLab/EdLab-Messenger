@@ -1,6 +1,6 @@
 import AWS from '../lib/AWS.js'
 const sqs = new AWS.SQS()
-const Op = SequelizeInst.Op
+const { Op } = require('sequelize')
 
 const STATUSES = {
   BOUNCE: 'Bounce',

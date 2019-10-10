@@ -1,5 +1,6 @@
 import AWS from '../lib/AWS.js'
 import moment from 'moment'
+import axios from 'axios'
 
 const ses = new AWS.SES()
 const { Op } = require('sequelize')
@@ -120,12 +121,12 @@ export default function (sequelize, DataTypes) {
         if (idx === length) {
           const completed_at = moment()
           this.update({ completed_at: completed_at })
-          Logger.debug(
-            `Email sending completed at ${ completed_at.toString() };
-               id: ${ this.id };
-               ${ noSuccess } successfully sent messages;
-               ${ noFailed } failed messages`
-          )
+          const logMessage = `Email sending completed at ${ completed_at.toString() };
+            id: ${ this.id };
+            ${ noSuccess } successfully sent messages;
+            ${ noFailed } failed messages`
+          Logger.debug(logMessage)
+          axios.post(AppConfig.SLACK_NOTIFIER_API, { text: `MESSENGER: ${ logMessage }` })
           return resolve()
         }
         return Message

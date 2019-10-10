@@ -14,6 +14,7 @@ const {
   ACCOUNTS_DB_HOST,
   BASIC_AUTH_USER,
   BASIC_AUTH_PWD,
+  SLACK_NOTIFIER_API,
 } = process.env
 
 const configs = {
@@ -45,6 +46,7 @@ const configs = {
     BASIC_AUTH_USERS: {
       [BASIC_AUTH_USER]: BASIC_AUTH_PWD,
     },
+    SLACK_NOTIFIER_API: SLACK_NOTIFIER_API,
     ENABLE_DOC: true,
   },
   development: {

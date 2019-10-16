@@ -1,3 +1,4 @@
+
 import Sequelize from 'sequelize'
 import { highlight } from 'cli-highlight'
 import { green, gray, yellow, magenta } from 'chalk'

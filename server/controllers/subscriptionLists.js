@@ -117,7 +117,7 @@ export function unsubscribe(_req, res, next) {
     .then(() => SubscriptionList.findByPk(listId))
     .then(subscriptionList => {
       return res.render('unsubscribe', {
-        subscribeLink: `/subscription_lists/subscribe/${ key }`,
+        subscribeLink: `/subscription_lists/subscribe/${key}`,
         subscriptionListName: subscriptionList ? subscriptionList.name : '',
         subscriptionListDescription: subscriptionList ? subscriptionList.description : '',
       })
@@ -226,17 +226,17 @@ export function updateSubscriptions(_req, res, next) {
  */
 export function addSubscription(_req, res, next) {
   const { id = null, user_uid = null } = res.locals
-  Subscription
+  return Subscription
     .findOrCreate({
       where: {
         user_uid: user_uid,
-        subscription_list_id: id,
+        subscriptionListId: id,
       },
     })
-    .spread((subscription/*, created */) => {
-      // if (!created) {
-      //   return next(Response.Invalid('Subscription already exists'))
-      // }
+    .spread((subscription, created) => {
+      if (!created) {
+        return next(Response.Invalid('Subscription already exists'))
+      }
       return res.status(201).json(subscription)
     })
     .catch(e => next(e))
@@ -346,7 +346,7 @@ export function create(_req, res, next) {
  *    {}
  */
 export function destroy(_req, res, next) {
-  const { id = null} = res.locals
+  const { id = null } = res.locals
   SubscriptionList
     .findByPk(id)
     .then(subscriptionList => subscriptionList.destroy())

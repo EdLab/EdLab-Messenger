@@ -31,7 +31,7 @@ AppConfig.appVersion = version
 const app = express()
 app.locals.AppConfig = AppConfig
 app.locals.appVersion = version
-app.locals.appVersionHash = Buffer.from(`MESSENGER_VERSION:${ version }`).toString('hex')
+app.locals.appVersionHash = Buffer.from(`MESSENGER_VERSION:${version}`).toString('hex')
 
 app.set('view engine', 'ejs')
 app.set('trust proxy', ['loopback', 'uniquelocal', '172.30.0.0/16'])
@@ -46,6 +46,8 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Origin'],
 }))
+
+
 
 if (AppConfig.isProduction) {
   app.use(morgan('combined'))

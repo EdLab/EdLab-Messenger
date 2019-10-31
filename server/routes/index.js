@@ -18,6 +18,11 @@ router.get(
   getParam('key', { parser: 'string' }),
   getController('subscriptionLists').unsubscribe
 )
+subscriptionListRouter.get(
+  '/subscription_lists/subscribe/:key',
+  getParam('key', { parser: 'string' }),
+  getController('subscriptionLists').subscribe
+)
 
 router.use(basicAuth({
   users: AppConfig.BASIC_AUTH_USERS,
@@ -163,11 +168,6 @@ router.use('/subscription_lists',
       getParam('id', { parser: 'integer' }),
       getParam('p', { parser: 'integer' }),
       getController('subscriptionLists').subscriptions
-    )
-    subscriptionListRouter.get(
-      '/subscribe/:key',
-      getParam('key', { parser: 'string' }),
-      getController('subscriptionLists').subscribe
     )
     subscriptionListRouter.put(
       '/:id/subscriptions',

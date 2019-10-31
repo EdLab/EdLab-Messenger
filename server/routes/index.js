@@ -13,6 +13,12 @@ router.get(['', '/version'], (_req, res) => {
   res.json({ version: AppConfig.appVersion })
 })
 
+router.get(
+  '/subscription_lists/unsubscribe/:key',
+  getParam('key', { parser: 'string' }),
+  getController('subscriptionLists').unsubscribe
+)
+
 router.use(basicAuth({
   users: AppConfig.BASIC_AUTH_USERS,
 }))
@@ -157,11 +163,6 @@ router.use('/subscription_lists',
       getParam('id', { parser: 'integer' }),
       getParam('p', { parser: 'integer' }),
       getController('subscriptionLists').subscriptions
-    )
-    subscriptionListRouter.get(
-      '/unsubscribe/:key',
-      getParam('key', { parser: 'string' }),
-      getController('subscriptionLists').unsubscribe
     )
     subscriptionListRouter.get(
       '/subscribe/:key',

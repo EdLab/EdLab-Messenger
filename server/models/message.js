@@ -25,6 +25,7 @@ export default function (sequelize, DataTypes) {
   Message.associate = (models) => {
     Message.belongsTo(models.email, {
       onDelete: 'RESTRICT',
+      foreignKey: { allowNull: false, name: 'email_id' },
     })
     Message.hasMany(models.status_log, {
       onDelete: 'CASCADE',

@@ -230,7 +230,7 @@ export function addSubscription(_req, res, next) {
     .findOrCreate({
       where: {
         user_uid: user_uid,
-        subscriptionListId: id,
+        subscription_list_id: id,
       },
     })
     .spread((subscription, created) => {

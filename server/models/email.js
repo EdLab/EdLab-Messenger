@@ -57,11 +57,11 @@ export default function (sequelize, DataTypes) {
     })
     Email.belongsTo(models.subscription_list, {
       onDelete: 'RESTRICT',
-      foreignKey: { allowNull: true },
+      foreignKey: { allowNull: true, name: 'subscription_list_id' },
     })
     Email.belongsTo(models.from_email, {
       onDelete: 'RESTRICT',
-      foreignKey: { allowNull: false },
+      foreignKey: { allowNull: false, name: 'from_email_id' },
     })
   }
 

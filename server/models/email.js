@@ -108,7 +108,7 @@ export default function (sequelize, DataTypes) {
       if (this.completed_at) {
         return reject(`Email with id: ${ this.id } completed at ${ this.completed_at }`)
       }
-      let to_users, to_emails, cc_emails, bcc_emails, from_email_address, length
+      let to_users = [], to_emails = [], cc_emails = [], bcc_emails = [], from_email_address, length
       let sleepTime, startTime, sendRate
       let timeDiff = 0
       let noSuccess = 0
@@ -187,28 +187,36 @@ export default function (sequelize, DataTypes) {
             length = to_emails.length
           } else if (email.to_user_uids) {
             to_user_uids = email.to_user_uids.split(',')
-            length = to_user_uids.length
           } else {
             const subscriptions = email.subscription_list.subscriptions
             to_user_uids = subscriptions.map(s => s.user_uid)
-            length = to_user_uids.length
           }
           const cc_user_uids = email.cc_user_uids ? email.cc_user_uids.split(',') : []
           const bcc_user_uids = email.bcc_user_uids ? email.bcc_user_uids.split(',') : []
-          const userOptions = (user_uids = []) => {
+          const userOptions = (user_uids = [], sent_uids = []) => {
             return {
               where: {
                 uid: {
                   [Op.in]: user_uids,
+                  [Op.notIn]: sent_uids,
                 },
               },
               attributes: ['uid', 'email', 'firstname', 'lastname', 'username'],
             }
           }
-          const toUsersPromise = User
-            .findAll(userOptions(to_user_uids))
-            .then(users => {
-              to_users = users
+          const toUsersPromise = Message
+            .findAll({
+              where: {
+                email_id: email.id,
+              },
+            })
+            .then(messages => {
+              const sent_user_uids = messages.map(m => m.to_user_uid)
+              return User
+                .findAll(userOptions(to_user_uids, sent_user_uids))
+                .then(users => {
+                  to_users = users
+                })
             })
           const ccUsersPromise = User
             .findAll(userOptions(cc_user_uids))
@@ -226,6 +234,7 @@ export default function (sequelize, DataTypes) {
           return ses.getSendQuota().promise()
         })
         .then(data => {
+          length = to_users.length
           sendRate = data.MaxSendRate
           sleepTime = length / sendRate
           startTime = moment()

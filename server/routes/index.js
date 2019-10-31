@@ -18,7 +18,7 @@ router.get(
   getParam('key', { parser: 'string' }),
   getController('subscriptionLists').unsubscribe
 )
-subscriptionListRouter.get(
+router.get(
   '/subscription_lists/subscribe/:key',
   getParam('key', { parser: 'string' }),
   getController('subscriptionLists').subscribe

@@ -1,5 +1,7 @@
 const {
-  AWS_REGION = 'us-east-1',
+  AWS_REGION,
+  AWS_ACCESS_KEY,
+  AWS_SECRET_KEY,
   SES_CONFIGURATION_SET,
   SQS_QUEUE_URL,
   ACCOUNTS_DB,
@@ -21,6 +23,8 @@ const configs = {
   default: {
     AWS_CONFIG: {
       AWS_REGION: AWS_REGION,
+      AWS_ACCESS_KEY: AWS_ACCESS_KEY,
+      AWS_SECRET_KEY: AWS_SECRET_KEY,
       EMAIL_SENDER: 'EdLab IT <edlabit@tc.edu>',
     },
     PAGINATION_LIMIT: 12,
@@ -61,6 +65,8 @@ const configs = {
   production: {
     AWS_CONFIG: {
       AWS_REGION: AWS_REGION,
+      AWS_ACCESS_KEY: AWS_ACCESS_KEY,
+      AWS_SECRET_KEY: AWS_SECRET_KEY,
       EMAIL_SENDER: 'TC Library <library@tc.columbia.edu>',
     },
   },
